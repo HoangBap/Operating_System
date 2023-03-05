@@ -1,35 +1,72 @@
-#include<iostream>
-#include<iomanip>
-
-#include"FAT32.h"
+#include<Windows.h>
+#include<string>
 using namespace std;
+#include"Menu.h"
 
+void printFAT32Menu(LPCWSTR  drive, BYTE sector[512])
+{
+    system("cls");
+    cout << "______________FAT32______________\n";
+    cout << "1. Bootsector Information\n2. RDET Information\n3. Exit\n";
+    cout << "Enter your choice (1->3): ";
 
-void MainMenu() {
-	//char choice;
-	//cout << "_________________________" << "WELCOME" << "__________________________" << endl;
-	//cout << "|	" << "1. Partition detail" << setfill(' ') << setw(31) << "|" << endl;
-	//cout << "|	" << "2. Partition tree structure " << setfill(' ') << setw(22) << "|" << endl;
-	//cout << "|	" << "3. Exit the program" << setfill(' ') << setw(31) << "|" << endl;
-	//cout << "|________________________________________________________|" << endl;
-	//cout << "	Please choose your option: ";							
-	//cin >> choice;
+    int choice;
+    cin >> choice;
+    while (true) {
+        switch (choice)
+        {
+        case 1:
+        {
+            //    PrintInfo();
+            break;
+        }
+        case 2:
+        {
+            break;
+        }
+        //Thoat khoi menu FAT32
+        case 3:
+            return;
+        
+        default:
+        {
+            cout << "Please choose your choice again...!" << endl;
+            break;
+        }
+        }
+    }
+}
 
-	//while (true) {
-	//	switch (choice) {
-	//	case 1:
-	//		/*PartitionDetailMenu();*/
-	//		break;
+void printMainMenu()
+{
+    while (true) {
+        system("cls");
+        string USB;
 
-	//	case 2:
-	//		/*ParitionTreeMenu();*/
-	//		break;
+        cout << "_______________________WELCOME TO  OUR PROGRAM________________________\n";
+        cout << "Enter USB label name or press<q> to Exit: " << endl;
+        cin >> USB;
 
-	//	case 3:
-	//		break;
+        if (USB == "q")
+            break;
 
-	//	default:
-	//		break;
-	//	}
-	//}
+        cout << "Program is running..." << endl;
+        wstring convert(USB.begin(), USB.end());
+        wstring path = L"\\\\.\\" + convert + L":";
+        BYTE sector[512];
+        ReadSector(path.c_str(), 0, sector);
+
+        if (isFAT32(sector))
+        {
+            cout << "File system: FAT32" << endl;
+            printFAT32Menu(path.c_str(), sector);
+        }
+        /*else
+        {
+        cout << "File system: NTFS" << end;;
+        printNTFSMenu(path.c_str(), sector);
+        }*/
+    }
+
+    cout << "Program is shutting down..." << endl;
 }

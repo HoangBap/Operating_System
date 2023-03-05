@@ -1,149 +1,24 @@
 #include<iostream>
 #include<sstream>
-
+#include"Function.h"
 #include"FAT32.h"
 using namespace std;
-
-int ReadSector(LPCWSTR drive, int readPoint, BYTE sector[512]) {
-    int retCode = 0;
-    DWORD bytesRead;
-    HANDLE device = NULL;
-
-    device = CreateFile(drive,    // Drive to open
-        GENERIC_READ,           // Access mode
-        FILE_SHARE_READ | FILE_SHARE_WRITE,        // Share Mode
-        NULL,                   // Security Descriptor
-        OPEN_EXISTING,          // How to create
-        0,                      // File attributes
-        NULL);                  // Handle to template
-
-    if (device == INVALID_HANDLE_VALUE) { // Open Error
-        cout << "CreateFile: " << GetLastError() << endl;
-        return 0;
-    }
-    SetFilePointer(device, readPoint, NULL, FILE_BEGIN);//Set a Point to Read
-
- 
-    if (!ReadFile(device, sector, 512, &bytesRead, NULL))
-        cout << "ReadFile: " << GetLastError() << endl;
-    else
-        cout << "Success!" << endl;
- 
-    return 1;
-}
-
-ull hexaToInt(string value)
-{
-    ull offset = 0;
-    for (int i = 0; i < value.length(); i++)
-    {
-        offset *= 16;
-        switch (value[i])
-        {
-        case '0':
-            offset += 0;
-            break;
-
-        case '1':
-            offset += 1;
-            break;
-
-        case '2':
-            offset += 2;
-            break;
-
-        case '3':
-            offset += 3;
-            break;
-
-        case '4':
-            offset += 4;
-            break;
-
-        case '5':
-            offset += 5;
-            break;
-
-        case '6':
-            offset += 6;
-            break;
-
-        case '7':
-            offset += 7;
-            break;
-
-        case '8':
-            offset += 8;
-            break;
-
-        case '9':
-            offset += 9;
-            break;
-
-        case 'A':
-            offset += 10;
-            break;
-
-        case 'B':
-            offset += 11;
-            break;
-
-        case 'C':
-            offset += 12;
-            break;
-
-        case 'D':
-            offset += 13;
-            break;
-
-        case 'E':
-            offset += 14;
-            break;
-
-        case 'F':
-            offset += 15;
-            break;
-
-        default:
-            offset += 0;
-            break;
-        }
-    }
-    return offset;
-}
-
-ull byteToInt(BYTE value)
-{
-    ull res = ull((unsigned char)(value));
-    return res;
-}
-
-string intToHexa(ull value) {
-     stringstream ss;
-     ss << hex << value;
-
-    string res(ss.str());
-    if (res.length() != 2)
-        res = "0" + res;
- 
-    return res;
-}
 
 ull readPlace(BYTE sector[512], string addr, ull sizeByte)
 {
     ull res = 0;
-    ull beginOffset = hexaToInt(addr);
+    ull beginOffset = HexToInt(addr);
     string byteString = "";
 
     for (sizeByte -= 1; sizeByte >= 0; sizeByte--)
     {
         BYTE b = sector[beginOffset + sizeByte];
-        byteString += intToHexa(byteToInt(b));
+        byteString += IntToHex(ByteToInt(b));
         if (sizeByte == 0)
             break;
     }
 
-    res = hexaToInt(byteString);
+    res = HexToInt(byteString);
     return res;
 }
 
@@ -180,7 +55,7 @@ void entrySplitView(BYTE*& sector, ull sizeSector, DirectoryFile& Dir)
     while (true)
     {
         BYTE c = sector[i];
-        string status = intToHexa(byteToInt(c));
+        string status = IntToHex(ByteToInt(c));
 
         if (status.find("e5") == string::npos && status.find("00") == string::npos)
             Dir.numberEntry++;
@@ -197,12 +72,12 @@ void entrySplitView(BYTE*& sector, ull sizeSector, DirectoryFile& Dir)
     while (cnt < Dir.numberEntry)
     {
         BYTE c = sector[i];
-        string status = intToHexa(byteToInt(c));
+        string status = IntToHex(ByteToInt(c));
         if (status.find("e5") == string::npos && status.find("00") == string::npos)
         {
 
             Dir.currEntry[cnt].status = c;
-            Dir.currEntry[cnt].additionEntry = byteToInt(sector[i + 11]) != 15 ? false : true;
+            Dir.currEntry[cnt].additionEntry = ByteToInt(sector[i + 11]) != 15 ? false : true;
             Dir.currEntry[cnt].type = sector[i + 11];
 
             for (int l = 0; l < 32; l++)
@@ -215,80 +90,80 @@ void entrySplitView(BYTE*& sector, ull sizeSector, DirectoryFile& Dir)
     }
 }
 
-void RDETOverView(LPCWSTR  drive, BYTE*& sector, const FAT32& origin, DirectoryFile& Dir, unsigned int* FAT, ull& readPoint, ull& totalByteSector)
-{
-    vector<ull> clusterContain;
-    clusterContain.push_back(origin.clusterBeginRDET);
+//void RDETOverView(LPCWSTR  drive, BYTE*& sector, const FAT32& origin, DirectoryFile& Dir, unsigned int* FAT, ull& readPoint, ull& totalByteSector)
+//{
+//    vector<ull> clusterContain;
+//    clusterContain.push_back(origin.clusterBeginRDET);
+//
+//    unsigned int field = FAT[clusterContain[clusterContain.size() - 1]];
+//
+//    while (field != HexToInt("0FFFFFFF"))
+//    {
+//        clusterContain.push_back(field);
+//        field = FAT[clusterContain[clusterContain.size() - 1]];
+//    }
+//
+//    readPoint = (origin.sectorBootsector + origin.numFAT * origin.sizeFAT) * origin.bytePerSector;
+//    totalByteSector = clusterContain.size() * origin.sectorPerCluster * origin.bytePerSector;
+//    delete[] sector;
+//
+//    readSectorByByte(drive, readPoint, sector, totalByteSector);
+//    entrySplitView(sector, totalByteSector, Dir);
+//}
 
-    unsigned int field = FAT[clusterContain[clusterContain.size() - 1]];
+//void FATOverView(LPCWSTR  drive, unsigned int*& FAT, const FAT32& input, BYTE*& sector)
+//{
+//    //cout << endl;	
+//    //cout << "----------FAT-----------" << endl; 
+//    ull readPoint = input.bytePerSector * input.sectorBootsector;
+//    ull totalFATByte = input.numFAT * input.bytePerSector;
+//    //sector = NULL;
+//
+//    FAT = new unsigned int[totalFATByte / 4];
+//    readSectorByByte(drive, readPoint, sector, totalFATByte);
+//    for (ull i = 0; i < totalFATByte / 4; i++)
+//    {
+//        unsigned int a = 0;
+//        for (int j = 3; j >= 0; j--)
+//        {
+//            a <<= 8;
+//            unsigned int temp = (unsigned int)sector[4 * i + j];
+//            a += temp;
+//        }
+//
+//        FAT[i] = a;
+//    }
+//
+//}
 
-    while (field != hexaToInt("0FFFFFFF"))
-    {
-        clusterContain.push_back(field);
-        field = FAT[clusterContain[clusterContain.size() - 1]];
-    }
-
-    readPoint = (origin.sectorBootsector + origin.numFAT * origin.sizeFAT) * origin.bytePerSector;
-    totalByteSector = clusterContain.size() * origin.sectorPerCluster * origin.bytePerSector;
-    delete[] sector;
-
-    readSectorByByte(drive, readPoint, sector, totalByteSector);
-    entrySplitView(sector, totalByteSector, Dir);
-}
-
-void FATOverView(LPCWSTR  drive, unsigned int*& FAT, const FAT32& input, BYTE*& sector)
-{
-    //cout << endl;	
-    //cout << "----------FAT-----------" << endl; 
-    ull readPoint = input.bytePerSector * input.sectorBootsector;
-    ull totalFATByte = input.numFAT * input.bytePerSector;
-    //sector = NULL;
-
-    FAT = new unsigned int[totalFATByte / 4];
-    readSectorByByte(drive, readPoint, sector, totalFATByte);
-    for (ull i = 0; i < totalFATByte / 4; i++)
-    {
-        unsigned int a = 0;
-        for (int j = 3; j >= 0; j--)
-        {
-            a <<= 8;
-            unsigned int temp = (unsigned int)sector[4 * i + j];
-            a += temp;
-        }
-
-        FAT[i] = a;
-    }
-
-}
-
-void readFAT32Info(LPCWSTR drive, BYTE sector[512], FAT32& origin, BYTE*& RDET, DirectoryFile& Dir, unsigned int*& FAT, BYTE*& FATsector, ull& beginRdet, ull& sizeRdet)
-{
-    RDET = NULL;
-
-    Dir.type = "Folder";
-    Dir.name = wstring(drive);
-    Dir.extension = "RDET";
-    Dir.beginCluster = 2;
-    Dir.fileSize = 0;
-    Dir.childFiles = NULL;
-    Dir.numberFile = 0;
-    Dir.fatherFiles = NULL;
-
-    origin.bytePerSector = readPlace(sector, "B", 2);
-    origin.sectorPerCluster = readPlace(sector, "D", 1);
-    origin.sectorBootsector = readPlace(sector, "E", 2);
-    origin.numFAT = readPlace(sector, "10", 1);
-    origin.volumeSize = readPlace(sector, "20", 4);
-    origin.sizeFAT = readPlace(sector, "24", 4);
-    origin.clusterBeginRDET = readPlace(sector, "2C", 4);
-    origin.bootSectorSaveSector = readPlace(sector, "32", 2);
-    origin.additionalInfoSector = readPlace(sector, "30", 2);
-
-    FATOverView(drive, FAT, origin, FATsector);
-    RDETOverView(drive, RDET, origin, Dir, FAT, beginRdet, sizeRdet);
-    //DirectoryView(Dir.childFiles, Dir.numberFile, Dir.currEntry, Dir.numberEntry);
-    //SDETView(drive, origin, Dir, FAT);
-}
+//void readFAT32Info(LPCWSTR drive, BYTE sector[512], FAT32& origin, BYTE*& RDET, DirectoryFile& Dir, unsigned int*& FAT, BYTE*& FATsector, ull& beginRdet, ull& sizeRdet)
+//{
+//    RDET = NULL;
+//
+//    Dir.type = "Folder";
+//    Dir.name = wstring(drive);
+//    Dir.extension = "RDET";
+//    Dir.beginCluster = 2;
+//    Dir.fileSize = 0;
+//    Dir.childFiles = NULL;
+//    Dir.numberFile = 0;
+//    Dir.fatherFiles = NULL;
+//
+//    origin.bytePerSector = readPlace(sector, "B", 2);
+//    origin.sectorPerCluster = readPlace(sector, "D", 1);
+//    origin.sectorBootsector = readPlace(sector, "E", 2);
+//    origin.numFAT = readPlace(sector, "10", 1);
+//    origin.volumeSize = readPlace(sector, "20", 4);
+//    origin.sizeFAT = readPlace(sector, "24", 4);
+//    origin.clusterBeginRDET = readPlace(sector, "2C", 4);
+//    origin.bootSectorSaveSector = readPlace(sector, "32", 2);
+//    origin.additionalInfoSector = readPlace(sector, "30", 2);
+//
+//    FATOverView(drive, FAT, origin, FATsector);
+//    RDETOverView(drive, RDET, origin, Dir, FAT, beginRdet, sizeRdet);
+//    //DirectoryView(Dir.childFiles, Dir.numberFile, Dir.currEntry, Dir.numberEntry);
+//    //SDETView(drive, origin, Dir, FAT);
+//}
 
 void displayFAT32(LPCWSTR drive, BYTE sector[512]) 
 {
@@ -303,7 +178,7 @@ void displayFAT32(LPCWSTR drive, BYTE sector[512])
     ull beginRDET;
     ull sizeRDET;   
 
-    readFAT32Info(drive, sector, origin, RDET, *Root, FAT, FATsector, beginRDET, sizeRDET);
+    /*readFAT32Info(drive, sector, origin, RDET, *Root, FAT, FATsector, beginRDET, sizeRDET);*/
 
  /*   DisplayBootSectorInfo(origin);
 
@@ -346,3 +221,4 @@ bool runFAT32() {
     else
         return false;
 }
+

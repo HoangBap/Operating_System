@@ -1,7 +1,7 @@
-#include"FAT32.h"
+#include"Menu.h"
 using namespace std;
 
 int main(int argc, char** argv)
 {
-	runFAT32();
+	printMainMenu();
 }

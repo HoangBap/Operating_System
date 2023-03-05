@@ -1,101 +1,35 @@
-#include "Menu.h"
+#include<iostream>
+#include<iomanip>
 
-MainMenu::MainMenu()
-{
+#include"FAT32.h"
+using namespace std;
 
-}
 
-shared_ptr<MainMenu> MainMenu::instance()
-{
-    if (_instance == NULL) {
-        auto temp = new MainMenu();
-        _instance = shared_ptr<MainMenu>(temp);
-    }
-    return _instance;
-}
+void MainMenu() {
+	//char choice;
+	//cout << "_________________________" << "WELCOME" << "__________________________" << endl;
+	//cout << "|	" << "1. Partition detail" << setfill(' ') << setw(31) << "|" << endl;
+	//cout << "|	" << "2. Partition tree structure " << setfill(' ') << setw(22) << "|" << endl;
+	//cout << "|	" << "3. Exit the program" << setfill(' ') << setw(31) << "|" << endl;
+	//cout << "|________________________________________________________|" << endl;
+	//cout << "	Please choose your option: ";							
+	//cin >> choice;
 
-void MainMenu::Print()
-{
-    system("cls");
-    cout << "______________MENU______________\n";
-    cout << "1. FAT32\n2. NFTS\n3. Exit\n";
-    cout << "Enter your choice (1->3): ";
-    int choice;
-    cin >> choice;
-    if (choice == 1)
-    {
-        auto FAT32_Menu_page = FAT32_Menu::instance();
-        FAT32_Menu_page->Print();
-    }
-    else if (choice == 2)
-    {
-        auto NTFS_Menu_page = NTFS_Menu::instance();
-        NTFS_Menu_page->Print();
-    }
-    else
-    {
-        return;
-    }
-}
+	//while (true) {
+	//	switch (choice) {
+	//	case 1:
+	//		/*PartitionDetailMenu();*/
+	//		break;
 
-FAT32_Menu::FAT32_Menu()
-{
+	//	case 2:
+	//		/*ParitionTreeMenu();*/
+	//		break;
 
-}
+	//	case 3:
+	//		break;
 
-shared_ptr<FAT32_Menu> FAT32_Menu::instance()
-{
-    if (_instance == NULL) {
-        auto temp = new FAT32_Menu();
-        _instance = shared_ptr<FAT32_Menu>(temp);
-    }
-    return _instance;
-}
-
-void FAT32_Menu::Print()
-{
-    system("cls");
-    cout << "______________MENU______________\n";
-    cout << "1. Read boot sector\n2. Print RDET\n3. Exit\n";
-    cout << "Enter your choice (1->3): ";
-    int choice;
-    cin >> choice;
-    if (choice == 1);
-    else if (choice == 2);
-    else
-    {
-        auto MainMenu_page = MainMenu::instance();
-        MainMenu_page->Print();
-    }
-}
-
-NTFS_Menu::NTFS_Menu()
-{
-
-}
-
-shared_ptr<NTFS_Menu> NTFS_Menu::instance()
-{
-    if (_instance == NULL) {
-        auto temp = new NTFS_Menu();
-        _instance = shared_ptr<NTFS_Menu>(temp);
-    }
-    return _instance;
-}
-
-void NTFS_Menu::Print()
-{
-    system("cls");
-    cout << "______________MENU______________\n";
-    cout << "1. Read boot sector\n2. Print RDET\n3. Exit\n";
-    cout << "Enter your choice (1->3): ";
-    int choice;
-    cin >> choice;
-    if (choice == 1);
-    else if (choice == 2);
-    else
-    {
-        auto MainMenu_page = MainMenu::instance();
-        MainMenu_page->Print();
-    }
+	//	default:
+	//		break;
+	//	}
+	//}
 }

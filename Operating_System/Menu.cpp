@@ -1,7 +1,9 @@
-#include<Windows.h>
 #include<string>
-using namespace std;
+
 #include"Menu.h"
+#include"FAT32.h"
+#include"Function.h"
+using namespace std;
 
 void printFAT32Menu(LPCWSTR  drive, BYTE sector[512])
 {
@@ -17,7 +19,7 @@ void printFAT32Menu(LPCWSTR  drive, BYTE sector[512])
         {
         case 1:
         {
-            //    PrintInfo();
+            displayFAT32(drive, sector);
             break;
         }
         case 2:

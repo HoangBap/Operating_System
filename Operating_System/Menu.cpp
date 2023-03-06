@@ -7,6 +7,16 @@ using namespace std;
 
 void printFAT32Menu(LPCWSTR  drive, BYTE sector[512])
 {
+    FAT32 origin;
+    DirectoryFile* Root = new DirectoryFile();
+
+    unsigned int* FAT = NULL;
+    BYTE* FATsector = NULL;
+    BYTE* RDET;
+    ull beginRdet;
+    ull rdetSize;
+    readFAT32Info(drive, sector, origin, RDET, *Root, FAT, FATsector, beginRdet, rdetSize);
+
     system("cls");
     cout << "______________FAT32______________\n";
     cout << "1. Bootsector Information\n2. RDET Information\n3. Exit\n";
@@ -19,17 +29,21 @@ void printFAT32Menu(LPCWSTR  drive, BYTE sector[512])
         {
         case 1:
         {
-            displayFAT32(drive, sector);
+            //    PrintInfo();
+         //   DisplayFatInfo(BYTE * sector, ull readPoint, ull totalByteSector, unsigned int* FAT);
+         //   displayFAT32BootSectorInfo();
             break;
         }
         case 2:
         {
+            void PrintDir(LPCWSTR  drive, DirectoryFile inp, ull number, int level,
+                unsigned int* FAT, FAT32 origin);
             break;
         }
         //Thoat khoi menu FAT32
         case 3:
             return;
-        
+
         default:
         {
             cout << "Please choose your choice again...!" << endl;
@@ -56,7 +70,7 @@ void printMainMenu()
         wstring convert(USB.begin(), USB.end());
         wstring path = L"\\\\.\\" + convert + L":";
         BYTE sector[512];
-        ReadSector(path.c_str(), 0, sector);
+        readSector(path.c_str(), 0, sector);
 
         if (isFAT32(sector))
         {

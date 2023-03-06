@@ -69,51 +69,19 @@
 #define ull uint32_t
 using namespace std;
 
-class Object
+struct FAT32
 {
-public:
-
-};
-
-class FAT32
-{
-private:
-	ull _bytePerSector;
-	ull _sectorPerCluster;
-	ull _sectorBootsector;
-	ull _numFAT;
-	ull _volumeSize;
-	ull _sizeFAT;
-	ull _clusterBeginRDET;
-	ull _bootSectorSaveSector;
-	ull _additionalInfoSector;
+	ull bytePerSector;
+	ull sectorPerCluster;
+	ull sectorBootsector;
+	ull numFAT;
+	ull volumeSize;
+	ull sizeFAT;
+	ull clusterBeginOfRDET;
+	ull bootSectorSaveSector;
+	ull additionalInfoSector;
 	unsigned int* _FAT;
-
-public:
-	ull bytePerSector() { return _bytePerSector; }
-	ull sectorPerCluster() { return _sectorPerCluster; }
-	ull sectorBootsector() { return _sectorBootsector; }
-	ull numFAT() { return _numFAT; }
-	ull volumeSize() { return _volumeSize; }
-	ull sizeFAT() { return _sizeFAT; }
-	ull clusterBeginRDET() { return _clusterBeginRDET; }
-	ull bootSectorSaveSector() { return _bootSectorSaveSector; }
-	ull additionalInfoSector() { return _additionalInfoSector; }
-
-	void setBytePerSector(ull value) { _bytePerSector = value; }
-	void setSectorPerCluster(ull value) { _sectorPerCluster = value; }
-	void setSectorBootSector(ull value) { _sectorBootsector = value; }
-	void setNumFAT(ull value) { _numFAT = value; }
-	void setVolumeSize(ull value) { _volumeSize = value; }
-	void setSizeFAT(ull value) { _sizeFAT = value; }
-	void setClusterBeginRDET(ull value) { _clusterBeginRDET = value; }
-	void setBootSectorSaveSector(ull value) { _bootSectorSaveSector = value; }
-	void setAdditionalInfoSector(ull value) { _additionalInfoSector = value; }
-
-public:
-	void printFAT32Info();
 };
-
 struct Entry
 {
 	BYTE status;
@@ -121,7 +89,6 @@ struct Entry
 	bool additionEntry;
 	BYTE information[32];
 };
-
 struct DirectoryFile
 {
 	string type;
@@ -142,5 +109,20 @@ struct DirectoryFile
 
 };
 
-int ConvertHexToDec(string);
-string Read(string** Table, int x, int y, int NumberOfBytes);
+void readMainEntry(Entry c, DirectoryFile& res);
+
+wstring readAdditionEntry(Entry c);
+
+void readFAT32Info(LPCWSTR drive, BYTE sector[512], FAT32& origin, BYTE*& RDET, DirectoryFile& Dir, unsigned int*& FAT, BYTE*& FATsector, ull& beginRdet, ull& sizeRdet);
+
+void FATOverView(LPCWSTR, unsigned int*&, FAT32&, BYTE*&);
+
+void entrySplitView(BYTE*& sector, ull sizeSector, DirectoryFile& Dir);
+
+void viewDirectory(DirectoryFile*& Dir, ull& numberFile, const Entry* listEntry, const ull& countEntry);
+
+void RDETOverView(LPCWSTR  drive, BYTE*& sector, FAT32& origin, DirectoryFile& Dir, unsigned int* FAT, ull& readPoint, ull& totalByteSector);
+
+void SDETView(LPCWSTR  drive, const FAT32& input, DirectoryFile& Dir, unsigned int*& fat);
+
+void directoryView(DirectoryFile*& Dir, ull& numberFile, const Entry* listEntry, const ull& countEntry);

@@ -135,9 +135,7 @@
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DisplayFAT32.h" />
     <ClInclude Include="FAT32.h" />
-    <ClInclude Include="Header.h" />
     <ClInclude Include="Function.h" />
     <ClInclude Include="Menu.h" />
   </ItemGroup>

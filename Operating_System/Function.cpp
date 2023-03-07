@@ -19,9 +19,28 @@ ull byteToInt(BYTE value)
 
 }
 
+string space(int inp)
+{
+    string res = "";
+    for (int i = 0; i < inp; i++)
+    {
+        res += " ";
+    }
+    return res;
+}
+wstring spaceW(int inp)
+{
+    wstring res = L"";
+    for (int i = 0; i < inp; i++)
+    {
+        res += L" ";
+    }
+    return res;
+}
+
 ull hexToInt(string value)
 {
-    ull res = 0;
+    /*ull res = 0;
     for (int i = 0; i < value.length(); i++)
     {
         res *= 16;
@@ -34,7 +53,83 @@ ull hexToInt(string value)
             res += (ull)(tolower(value[i]) - 'a' + 10);
         }
     }
-    return res;
+    return res;*/
+    ull offset = 0;
+    for (int i = 0; i < value.length(); i++)
+    {
+        offset *= 16;
+        switch (value[i])
+        {
+        case '0':
+            offset += 0;
+            break;
+
+        case '1':
+            offset += 1;
+            break;
+
+        case '2':
+            offset += 2;
+            break;
+
+        case '3':
+            offset += 3;
+            break;
+
+        case '4':
+            offset += 4;
+            break;
+
+        case '5':
+            offset += 5;
+            break;
+
+        case '6':
+            offset += 6;
+            break;
+
+        case '7':
+            offset += 7;
+            break;
+
+        case '8':
+            offset += 8;
+            break;
+
+        case '9':
+            offset += 9;
+            break;
+
+        case 'a':
+            offset += 10;
+            break;
+
+        case 'b':
+            offset += 11;
+            break;
+
+        case 'c':
+            offset += 12;
+            break;
+
+        case 'd':
+            offset += 13;
+            break;
+
+        case 'e':
+            offset += 14;
+            break;
+
+        case 'f':
+            offset += 15;
+            break;
+
+        default:
+            offset += 0;
+            break;
+        }
+    }
+    return offset;
 }
 
 void trimWstring(wstring& input)
@@ -72,7 +167,7 @@ ull readPlace(BYTE sector[512], string addr, ull sizeByte)
     return res;
 }
 
-int readSector(LPCWSTR  drive, int readPoint, BYTE sector[512])
+void readSector(LPCWSTR  drive, int readPoint, BYTE sector[512])
 {
     int retCode = 0;
     DWORD bytesRead;
@@ -89,7 +184,7 @@ int readSector(LPCWSTR  drive, int readPoint, BYTE sector[512])
     if (device == INVALID_HANDLE_VALUE) // Open Error
     {
         printf("CreateFile: %u\n", GetLastError());
-        return 1;
+        return;
     }
 
     SetFilePointer(device, readPoint, NULL, FILE_BEGIN);//Set a Point to Read
@@ -151,27 +246,4 @@ bool isFAT32(BYTE sector[512]) {
         return true;
 
     return false;
-}
-
-void displayFAT32(LPCWSTR drive, BYTE sector[512])
-{
-    FAT32 origin;
-    DirectoryFile* Root = new DirectoryFile();
-
-    unsigned int* FAT = NULL;
-
-    BYTE* FATsector = NULL;
-    BYTE* RDET;
-
-    ull beginRDET;
-    ull sizeRDET;
-
-    readFAT32Info(drive, sector, origin, RDET, *Root, FAT, FATsector, beginRDET, sizeRDET);
-
-    /*   DisplayBootSectorInfo(origin);
-
-       cout << endl;
-       cout << "-------Directory--------" << endl;
-       PrintDir(drive, *Root, Root->numberFile, 0, FAT, origin);*/
-
 }

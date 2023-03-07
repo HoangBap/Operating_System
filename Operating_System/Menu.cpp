@@ -8,36 +8,35 @@ using namespace std;
 void printFAT32Menu(LPCWSTR  drive, BYTE sector[512])
 {
     FAT32 origin;
-    DirectoryFile* Root = new DirectoryFile();
+    DirectoryFile* root = new DirectoryFile();
 
     unsigned int* FAT = NULL;
     BYTE* FATsector = NULL;
     BYTE* RDET;
     ull beginRdet;
     ull rdetSize;
-    readFAT32Info(drive, sector, origin, RDET, *Root, FAT, FATsector, beginRdet, rdetSize);
-
-    system("cls");
-    cout << "______________FAT32______________\n";
-    cout << "1. Bootsector Information\n2. RDET Information\n3. Exit\n";
-    cout << "Enter your choice (1->3): ";
+    readFAT32Info(drive, sector, origin, RDET, *root, FAT, FATsector, beginRdet, rdetSize);
 
     int choice;
-    cin >> choice;
     while (true) {
+        system("cls");
+        cout << "______________FAT32______________\n";
+        cout << "1. Bootsector Information\n2. RDET Information\n3. Exit\n";
+        cout << "Enter your choice (1->3): ";
+        cin >> choice;
+
         switch (choice)
         {
         case 1:
         {
-            //    PrintInfo();
-         //   DisplayFatInfo(BYTE * sector, ull readPoint, ull totalByteSector, unsigned int* FAT);
-         //   displayFAT32BootSectorInfo();
+            displayBootSectorInfo(origin);
+            system("pause");
             break;
         }
         case 2:
         {
-            void PrintDir(LPCWSTR  drive, DirectoryFile inp, ull number, int level,
-                unsigned int* FAT, FAT32 origin);
+            printRDET(drive, *root, root->numberFile, 0, FAT, origin);
+            system("pause");
             break;
         }
         //Thoat khoi menu FAT32

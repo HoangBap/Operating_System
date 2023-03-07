@@ -14,13 +14,12 @@ string intToHex(ull value);
 ull hexToInt(string value);
 ull byteToInt(BYTE value);
 void trimWstring(wstring& input);
+string space(int inp);
+wstring spaceW(int inp);
 
-int readSector(LPCWSTR, int, BYTE sector[512]);
 ull readPlace(BYTE sector[512], string addr, ull sizeByte);
+void readSector(LPCWSTR, int, BYTE sector[512]);
 void readSectorByByte(LPCWSTR, ull, BYTE*&, ull);
 
 bool isNTFS(BYTE sector[512]);
-
 bool isFAT32(BYTE sector[512]);
-void RDETOverView(LPCWSTR  drive, BYTE*& sector, const FAT32& origin, DirectoryFile& Dir, unsigned int* FAT, ull& readPoint, ull& totalByteSector);
-void displayFAT32(LPCWSTR drive, BYTE sector[512]);

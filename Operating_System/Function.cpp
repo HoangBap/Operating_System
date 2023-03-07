@@ -221,7 +221,7 @@ void readSectorByByte(LPCWSTR  drive, ull readPoint, BYTE*& sector, ull totalByt
 
     if (device == INVALID_HANDLE_VALUE) // Open Error
     {
-        printf("CreateFile: %u\n", GetLastError());
+        cout << "CreateFile: %u\n" << GetLastError();
         return;
     }
     SetFilePointer(device, scale.LowPart, &scale.HighPart, FILE_BEGIN);//Set a Point to Read

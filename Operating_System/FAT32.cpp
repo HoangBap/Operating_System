@@ -24,15 +24,15 @@ void displayBootSectorInfo(FAT32 origin)
 
 void printFileTextContent(BYTE sector[], ull begin, ull n)
 {
-	cout << "\033[95m" << "-------------------------------------------------" << endl;
-	cout << "\033[95m" << "		FILE TEXT CONTENT" << endl;
-	cout << "\033[95m" << "-------------------------------------------------" << endl;
+	cout << "\033[96m" << "-------------------------------------------------" << endl;
+	cout << "\033[96m" << "		FILE TEXT CONTENT" << endl;
+	cout << "\033[96m" << "-------------------------------------------------" << endl;
 	ull temp = begin;
 
 	for (ull i = 0; i < n; i++)
 	{
 		BYTE b = sector[i];
-		printf("\033[95m%c", isascii(b) ? b : '.');
+		printf("%c", isascii(b) ? b : '.');
 	}
 
 	cout << endl << "---------------- END OF FILE ------------------" << "\033[0m" << endl;
@@ -81,8 +81,8 @@ void printRDET(LPCWSTR  drive, DirectoryFile inp, ull number, int level, unsigne
 
 		if (temp.find("txt") == string::npos && temp.find("sql") == string::npos)
 		{
-			cout << "\033[95m" << "------------------------" << endl;
-			cout << "\033[95m" << "Please use an appropriate program to read this file" << endl;
+			cout << "\033[96m" << "------------------------" << endl;
+			cout << "\033[96m" << "Please use an appropriate program to read this file" << endl;
 			cout << endl << "-----------------------" << endl;
 			return;
 		}
@@ -99,7 +99,7 @@ void printRDET(LPCWSTR  drive, DirectoryFile inp, ull number, int level, unsigne
 			field = FAT[clusterContain[clusterContain.size() - 1]];
 		}
 
-		ull CurrentSector = origin.sectorBootsector + origin.numFAT * origin.sizeFAT + inp.beginCluster * origin.sectorPerCluster - origin.clusterBeginOfRDET * origin.sectorBootsector;
+		ull CurrentSector = origin.sectorBootsector + origin.numFAT * origin.sizeFAT + inp.beginCluster * origin.sectorPerCluster - origin.clusterBeginOfRDET * origin.sectorPerCluster;
 		ull readPoint = CurrentSector * origin.bytePerSector;
 		ull totalByteSector = clusterContain.size() * origin.sectorPerCluster * origin.bytePerSector;
 		BYTE* sector = NULL;

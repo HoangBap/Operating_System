@@ -29,13 +29,17 @@ void printFAT32Menu(LPCWSTR  drive, BYTE sector[512])
         {
         case 1:
         {
+            system("cls");
             displayBootSectorInfo(origin);
+            cout << endl;
             system("pause");
             break;
         }
         case 2:
         {
+            system("cls");
             printRDET(drive, *root, root->numberFile, 0, FAT, origin);
+            cout << endl;
             system("pause");
             break;
         }
@@ -44,10 +48,7 @@ void printFAT32Menu(LPCWSTR  drive, BYTE sector[512])
             return;
 
         default:
-        {
-            cout << "Please choose your choice again...!" << endl;
             break;
-        }
         }
     }
 }
@@ -59,7 +60,7 @@ void printMainMenu()
         string USB;
 
         cout << "_______________________WELCOME TO  OUR PROGRAM________________________\n";
-        cout << "Enter USB label name or press<q> to Exit: " << endl;
+        cout << "Enter USB label name or type \"q\" to Exit : " << endl;
         cin >> USB;
 
         if (USB == "q")
@@ -83,5 +84,6 @@ void printMainMenu()
         }*/
     }
 
-    cout << "Program is shutting down..." << endl;
+    cout << "Program is shutting down....." << endl;
+    system("pause");
 }

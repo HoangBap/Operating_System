@@ -1,5 +1,5 @@
 #include"Function.h"
-string intToHex(ull value)
+string intToHex(uin32 value)
 {
     stringstream ss;
     ss << hex << value;
@@ -12,43 +12,26 @@ string intToHex(ull value)
     return res;
 }
 
-ull byteToInt(BYTE value)
+uin32 byteToInt(BYTE value)
 {
-    ull res = ull((unsigned char)(value));
+    uin32 res = uin32((unsigned char)(value));
     return res;
 
 }
 
-string space(int input)
+uin32 hexToInt(string value)
 {
-    string character = "";
-    for (int i = 0; i < input; i++)
-        character += " ";
-  
-    return character;
-}
-wstring spaceW(int input)
-{
-    wstring character = L"";
-    for (int i = 0; i < input; i++)
-        character += L" ";
-    
-    return character;
-}
-
-ull hexToInt(string value)
-{
-    ull res = 0;
+    uin32 res = 0;
     for (int i = 0; i < value.length(); i++)
     {
         res *= 16;
         if (value[i] >= '0' && value[i] <= '9')
         {
-            res += (ull)(value[i] - '0');
+            res += (uin32)(value[i] - '0');
         }
         else if ((tolower(value[i])) >= 'a' && (tolower(value[i]) <= 'f'))
         {
-            res += (ull)(tolower(value[i]) - 'a' + 10);
+            res += (uin32)(tolower(value[i]) - 'a' + 10);
         }
     }
     return res;
@@ -70,10 +53,10 @@ void trimWstring(wstring& input)
     }
 }
 
-ull readPlace(BYTE sector[512], string addr, ull sizeByte)
+uin32 readPlace(BYTE sector[512], string addr, uin32 sizeByte)
 {
-    ull res = 0;
-    ull beginOffset = hexToInt(addr);
+    uin32 res = 0;
+    uin32 beginOffset = hexToInt(addr);
     string byteString = "";
 
     for (sizeByte -= 1; sizeByte >= 0; sizeByte--)
@@ -112,12 +95,9 @@ void readSector(LPCWSTR  drive, int readPoint, BYTE sector[512])
 
     if (!ReadFile(device, sector, 512, &bytesRead, NULL))
         cout << "ReadFile: \n" << GetLastError();
-
-    else
-        cout << "Success!\n";
 }
 
-void readSectorByByte(LPCWSTR  drive, ull readPoint, BYTE*& sector, ull totalByteSector)
+void readSectorByByte(LPCWSTR  drive, uin32 readPoint, BYTE*& sector, uin32 totalByteSector)
 {
     //Clear out the data stored in sector
     if (sector != NULL)

@@ -53,7 +53,7 @@ void printFAT32Menu(LPCWSTR  drive, BYTE sector[512])
         {
             system("cls");
             //Hiển thị thông tin các tập tin/thư mục trong cây thư mục 
-            printRDET(drive, *root, root->numberFile, FAT, origin);
+            printDirectory(drive, *root, root->numberFile, FAT, origin);
             system("pause");
             break;
         }
@@ -101,5 +101,4 @@ void printMainMenu()
     
     system("cls");
     cout << "Program is shutting down....." << endl;
-    system("pause");
 }

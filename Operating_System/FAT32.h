@@ -52,7 +52,7 @@ struct DirectoryFile
 void displayBootSectorInfo(FAT32 origin); 
 
 //Hiển thị cây thư mục
-void printRDET(LPCWSTR  drive, DirectoryFile inp, uin32 number, unsigned int* FAT, FAT32 origin);
+void printDirectory(LPCWSTR  drive, DirectoryFile inp, uin32 number, unsigned int* FAT, FAT32 origin);
 //In ra nội dung file nếu file đó là file text .txt
 void printFileTextContent(BYTE sector[], uin32 begin, uin32 n);
 //Hiển thị thông tin của file (Tên, loại, cluster bắt đầu, kích thước file, chiếm các sector nào)

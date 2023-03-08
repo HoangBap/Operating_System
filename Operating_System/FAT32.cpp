@@ -51,8 +51,7 @@ void displayBootSectorInfo(FAT32 origin)
 void printFileTextContent(BYTE sector[], uin32 begin, uin32 n)
 {
 	system("cls");
-	cout << "\033[96m" << setw(20) << "		FILE TEXT CONTENT" << endl;
-	cout << "\033[96m" << setw(50) << setfill(char(205)) << endl;
+	cout << "\033[96m" << setw(20) << " " << "FILE TEXT CONTENT" << endl << endl;
 	uin32 temp = begin;
 
 	for (uin32 i = 0; i < n; i++)
@@ -62,8 +61,7 @@ void printFileTextContent(BYTE sector[], uin32 begin, uin32 n)
 		cout << "\033[0m" << character;
 	}
 
-	cout << endl << "\033[96m"  << setw(50) << setfill(char(205)) << "END OF FILE" << endl;
-	system("pause");
+	cout << endl << endl << "\033[96m" << setw(20) << " " << "END OF FILE" << endl;
 }
 
 void displayDirFile(DirectoryFile input, int numberFolder)
@@ -71,7 +69,7 @@ void displayDirFile(DirectoryFile input, int numberFolder)
 	drawRect(1, 1 + numberFolder*DISTANCE, WIDTH, HEIGHT, numberFolder*DISTANCE, numberFolder*DISTANCE);
 
 	setxy(3, 2 + numberFolder*DISTANCE);
-	wcout << numberFolder << "." << "\033[96m" << input.name;
+	wcout << numberFolder << ": " << "\033[96m" << input.name;
 
 	setxy(10, 4 + numberFolder*DISTANCE);
 	cout << "\033[0m" << "- Type: " << input.type;
@@ -89,84 +87,91 @@ void displayDirFile(DirectoryFile input, int numberFolder)
 		cout << "\033[0m" << input.listSector.at(0) << ", ... ," << input.listSector.at(input.listSector.size() - 1);
 }
 
-//void printSDET(LPCWSTR  drive, DirectoryFile input, uin32 number, unsigned int* FAT, FAT32 origin) {
-//
-//	if (input.type.find("Folder") != string::npos)
-//	{
-//		for (ull i = 0; i < number; i++)
-//		{
-//			DirectoryFile c = input.childFiles[i];
-//			displayDirFile(c, number - 1 - i);
-//			if (c.name == L"." || c.name == L"..")
-//				continue;
-//			
-//			printSDET(drive, c, c.numberFile, FAT, origin);
-//
-//		}
-//	}
-//
-//	else
-//	{
-//		string temp = input.extension;
-//		transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
-//
-//		if (temp.find("txt") == string::npos && temp.find("sql") == string::npos)
-//		{
-//			cout << "\033[95m" << "------------------------" << endl;
-//			cout << "\033[95m" << "Use another program to read this file" << endl;
-//			cout << endl << "-----------------------" << endl;
-//			return;
-//		}
-//		vector<ull> clusterContain;
-//
-//		clusterContain.push_back(input.beginCluster);
-//		unsigned int field = FAT[clusterContain.at(clusterContain.size() - 1)];
-//		while (field != hexToInt("0fffffff"))
-//		{
-//			clusterContain.push_back(field);
-//			if (clusterContain[clusterContain.size() - 1] > (origin.numFAT * origin.bytePerSector / 4))
-//				break;
-//			field = FAT[clusterContain[clusterContain.size() - 1]];
-//		}
-//
-//
-//		ull CurrentSector = origin.sectorBootsector + origin.numFAT * origin.sizeFAT + input.beginCluster * origin.sectorPerCluster - origin.clusterBeginOfRDET * origin.sectorPerCluster;
-//		ull readPoint = CurrentSector * origin.bytePerSector;
-//		ull totalByteSector = clusterContain.size() * origin.sectorPerCluster * origin.bytePerSector;
-//		BYTE* sector = NULL;
-//
-//		readSectorByByte(drive, readPoint, sector, totalByteSector);
-//		printFileTextContent(sector, readPoint, totalByteSector);
-//		cout << endl;
-//	}
-//}
+uin32 getSize(DirectoryFile input) {
+	uin32 total = 0;
+	if (input.type.find("Folder") == string::npos)
+		return input.fileSize;
 
-void printRDET(LPCWSTR  drive, DirectoryFile input, uin32 number, unsigned int* FAT, FAT32 origin)
+	for (int i = 0; i < input.numberFile - 2; i++) {
+		total += getSize(input.childFiles[i]);
+	}
+	return total;
+}
+
+void printDirectory(LPCWSTR  drive, DirectoryFile input, uin32 number, unsigned int* FAT, FAT32 origin)
 {
 	system("cls");
 
 	DirectoryFile folder;
-	cout << setw(20) << " " << "ROOT DIRECTORY";
-	uin32 folderSize = 0;
+	cout << setw(20) << " " << "DIRECTORY";
+	uin32 fileSize;
 	//Print files and folders in RDET
 		
 	for (uin32 i = number - 1; i >= 0; i--)
 	{
+		fileSize = 0;
 		folder = input.childFiles[i];
-		if (folder.name == L"." || folder.name == L"..")
-			continue;
-
 		//Folder size
 		if (folder.numberFile != 0) {
 			for (int j = 0; j < folder.numberFile - 2; j++) {
-				folderSize += folder.childFiles[j].fileSize;
+				fileSize += getSize(folder.childFiles[j]);
 			}
-			folder.fileSize = folderSize;
+			folder.fileSize = fileSize;
 		}
 
 		displayDirFile(folder, number - i - 1);
 		if (i == 0) 
 			break;
+	}
+
+	//Cho người dùng muốn truy xuất thông tin của tập tin/thư mục trong cây thư mục
+	cout << "\n\n\n\n";
+	uin32 choice;
+	cout << "Enter the number corresponding to the file to see more information or type \"-1\" to QUIT: ";
+	cin >> choice;
+	if (choice > input.numberFile)
+		return;
+
+	choice = number - 1 - choice;
+	//Nếu người dùng muốn truy xuất thông tin của thư mục thì sẽ in ra cây thư mục con bên trong thư mục đó
+	if(input.childFiles[choice].type.find("Folder") != string::npos)
+		printDirectory(drive, input.childFiles[choice], input.childFiles[choice].numberFile, FAT, origin);
+
+	//Nếu người dùng muốn truy xuất nội dung thông tin của tập tin
+	else
+	{
+		string temp = input.childFiles[choice].extension;
+		transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
+
+		//Nếu không phải file text 
+		if (temp.find("txt") == string::npos)
+		{
+			system("cls");
+			cout << "\033[96m" << endl << "Please use an approriate program to read this file" << endl;
+			return;
+		}
+
+		vector<ull> clusterContain;
+
+		clusterContain.push_back(input.beginCluster);
+		unsigned int field = FAT[clusterContain.at(clusterContain.size() - 1)];
+		while (field != hexToInt("0fffffff"))
+		{
+			clusterContain.push_back(field);
+			if (clusterContain[clusterContain.size() - 1] > (origin.numFAT * origin.bytePerSector / 4))
+				break;
+			field = FAT[clusterContain[clusterContain.size() - 1]];
+		}
+
+
+		ull CurrentSector = origin.sectorBootsector + origin.numFAT * origin.sizeFAT + input.childFiles[choice].beginCluster * origin.sectorPerCluster - origin.clusterBeginOfRDET * origin.sectorPerCluster;
+		ull readPoint = CurrentSector * origin.bytePerSector;
+		ull totalByteSector = clusterContain.size() * origin.sectorPerCluster * origin.bytePerSector;
+		BYTE* sector = NULL;
+
+		readSectorByByte(drive, readPoint, sector, totalByteSector);
+		printFileTextContent(sector, readPoint, totalByteSector);
+		cout << endl;
 	}
 }
 

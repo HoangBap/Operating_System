@@ -48,11 +48,15 @@ struct DirectoryFile
 
 };
 
+bool isFAT32(BYTE sector[512]);
+
+uin32 getSizeFAT32(DirectoryFile input);
+
 //Hiển thị thông tin của bootsector FAT32 (số sector của bootsector, số sector cho mỗi cluster, ...)
 void displayBootSectorInfo(FAT32 origin); 
 
 //Hiển thị cây thư mục
-void printDirectory(LPCWSTR  drive, DirectoryFile inp, uin32 number, unsigned int* FAT, FAT32 origin);
+void printDirectory(LPCWSTR  drive, DirectoryFile inp, uin32 number, unsigned int* FAT, FAT32 origin, bool flag);
 //In ra nội dung file nếu file đó là file text .txt
 void printFileTextContent(BYTE sector[], uin32 begin, uin32 n);
 //Hiển thị thông tin của file (Tên, loại, cluster bắt đầu, kích thước file, chiếm các sector nào)

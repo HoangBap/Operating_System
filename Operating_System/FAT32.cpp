@@ -12,6 +12,22 @@
 #define DISTANCE 10
 using namespace std;
 
+bool isFAT32(BYTE sector[512]) {
+	string FATType = "";
+
+	for (int i = 0; i < 8; i++)
+	{
+		BYTE b = sector[0x52 + i];
+		FATType += isascii(b) ? b : '.';
+	}
+
+	//File system is FAT32
+	if (FATType.find("FAT32") != string::npos)
+		return true;
+
+	return false;
+}
+
 void displayBootSectorInfo(FAT32 origin)
 {
 	system("cls");
@@ -98,12 +114,16 @@ uin32 getSize(DirectoryFile input) {
 	return total;
 }
 
-void printDirectory(LPCWSTR  drive, DirectoryFile input, uin32 number, unsigned int* FAT, FAT32 origin)
+void printDirectory(LPCWSTR  drive, DirectoryFile input, uin32 number, unsigned int* FAT, FAT32 origin, bool flag)
 {
 	system("cls");
 
 	DirectoryFile folder;
-	cout << setw(20) << " " << "DIRECTORY";
+	if (!flag)
+		cout << setw(20) << " " << "ROOT DIRECTORY";
+	else
+		cout << setw(20) << " " << "DIRECTORY";
+
 	uin32 fileSize;
 	//Print files and folders in RDET
 		
@@ -114,7 +134,7 @@ void printDirectory(LPCWSTR  drive, DirectoryFile input, uin32 number, unsigned 
 		//Folder size
 		if (folder.numberFile != 0) {
 			for (int j = 0; j < folder.numberFile - 2; j++) {
-				fileSize += getSize(folder.childFiles[j]);
+				fileSize += getSizeFAT32(folder.childFiles[j]);
 			}
 			folder.fileSize = fileSize;
 		}
@@ -127,7 +147,8 @@ void printDirectory(LPCWSTR  drive, DirectoryFile input, uin32 number, unsigned 
 	//Cho người dùng muốn truy xuất thông tin của tập tin/thư mục trong cây thư mục
 	cout << "\n\n\n\n";
 	uin32 choice;
-	cout << "Enter the number corresponding to the file to see more information or type \"-1\" to QUIT: ";
+	cout << "- Enter the number corresponding to the file to see more information" << endl <<
+		"- Enter the unrelated key to QUIT: " << endl << "  Choice: ";
 	cin >> choice;
 	if (choice > input.numberFile)
 		return;
@@ -135,7 +156,7 @@ void printDirectory(LPCWSTR  drive, DirectoryFile input, uin32 number, unsigned 
 	choice = number - 1 - choice;
 	//Nếu người dùng muốn truy xuất thông tin của thư mục thì sẽ in ra cây thư mục con bên trong thư mục đó
 	if(input.childFiles[choice].type.find("Folder") != string::npos)
-		printDirectory(drive, input.childFiles[choice], input.childFiles[choice].numberFile, FAT, origin);
+		printDirectory(drive, input.childFiles[choice], input.childFiles[choice].numberFile, FAT, origin, 1);
 
 	//Nếu người dùng muốn truy xuất nội dung thông tin của tập tin
 	else

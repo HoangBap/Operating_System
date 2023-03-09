@@ -37,6 +37,78 @@ uin32 hexToInt(string value)
     return res;
 }
 
+char hexToChar(string value)
+{
+
+    char res = 0;
+    for (int i = 0; i < value.length(); i++)
+    {
+        res *= 16;
+        if (value[i] >= '0' && value[i] <= '9')
+        {
+            res += (value[i] - '0');
+        }
+        else if ((tolower(value[i])) >= 'a' && (tolower(value[i]) <= 'f'))
+        {
+            res += (tolower(value[i]) - 'a' + 10);
+        }
+    }
+
+    return res;
+}
+
+void printToASCCIIandHEX(BYTE sector[], uin32 begin, uin32 n)
+{
+    uin32 temp = begin + n;
+    int count = 0;
+    while (temp > 0)
+    {
+        count++; 
+        temp /= 10;
+    }
+
+    cout << setw(count + 3) << " ";
+    for (int i = 0; i < 16; i++)
+        cout << setw(2) << intToHex(i) << " ";
+    
+    cout << endl;
+
+    for (uin32 i = 0; i < n; i++)
+    {
+        if (0 == i % 16)
+        {
+            if (i != 0)
+            {
+                for (uin32 j = i - 16; j < i; j++)
+                {
+                    BYTE c = sector[j];
+                    printf("%c", char(c) != '\n' ? (c == 0 ? '.' : c) : '.');
+
+                }
+            }
+            cout << endl;
+            cout << setw(count + 2) << setfill('0') << intToHex(i + begin) << " ";
+        }
+
+        BYTE b = sector[i];
+        cout << setw(2) << fixed << intToHex(byteToInt(b)) << " ";
+    }
+
+    /*for (uin32 j = n - 16; j < n; j++)
+    {
+        BYTE c = sector[j];
+        if (char(c) != '\n') {
+            if (c == 0)
+                cout << ".";
+            else
+                cout << c;
+        }
+
+        else
+            cout << ".";
+    }*/
+}
+
 void trimWstring(wstring& input)
 {
     for (int i = input.length() - 1; i > 0; i--)
@@ -69,6 +141,19 @@ uin32 readPlace(BYTE sector[512], string addr, uin32 sizeByte)
 
     res = hexToInt(byteString);
     return res;
+}
+
+void readPlaceForString(BYTE sector[512], string addr, uin32 sizeByte, string& byteString)
+{
+    uin32 beginOffset = hexToInt(addr);
+    byteString = "";
+    for (uin32 i = sizeByte - 1; i >= 0; i--)
+    {
+        BYTE b = sector[beginOffset + i];
+        byteString += intToHex(byteToInt(b));
+        if (i == 0)
+            break;
+    }
 }
 
 void readSector(LPCWSTR  drive, int readPoint, BYTE sector[512])
@@ -131,18 +216,22 @@ void readSectorByByte(LPCWSTR  drive, uin32 readPoint, BYTE*& sector, uin32 tota
         cout << "ReadFile: \n" << GetLastError();
 }
 
-bool isFAT32(BYTE sector[512]) {
-    string FATType = "";
+
+
+bool isNTFS(BYTE sector[512])
+{
+    /*printToASCCIIandHEX(sector, 0, 512);*/
+    string NTFSType = "";
+    int beginOffset = hexToInt("3");
 
     for (int i = 0; i < 8; i++)
     {
-        BYTE b = sector[0x52 + i];
-        FATType += isascii(b) ? b : '.';
+        BYTE b = sector[beginOffset + i];
+        NTFSType += isascii(b) ? b : '.';
     }
 
-    //File system is FAT32
-    if (FATType.find("FAT32") != string::npos)
+    if (NTFSType.find("NTFS") != string::npos)
         return true;
-
+    
     return false;
 }

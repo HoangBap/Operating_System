@@ -103,13 +103,13 @@ void displayDirFile(DirectoryFile input, int numberFolder)
 		cout << "\033[0m" << input.listSector.at(0) << ", ... ," << input.listSector.at(input.listSector.size() - 1);
 }
 
-uin32 getSize(DirectoryFile input) {
+uin32 getSizeFAT32(DirectoryFile input) {
 	uin32 total = 0;
 	if (input.type.find("Folder") == string::npos)
 		return input.fileSize;
 
 	for (int i = 0; i < input.numberFile - 2; i++) {
-		total += getSize(input.childFiles[i]);
+		total += getSizeFAT32(input.childFiles[i]);
 	}
 	return total;
 }

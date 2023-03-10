@@ -40,13 +40,14 @@ void printNTFSMenu(LPCWSTR  drive, BYTE sector[512])
         //Xét lựa chọn
         switch (choice[0])
         {
-        case 1: //Hiển thị thông tin của một phân vùng người dùng đã chọn
+        case '1': //Hiển thị thông tin của một phân vùng người dùng đã chọn
         {
             //Hàm hiển thị thông tin phân vùng
             displayBPBInfo(origin);
+            system("pause");
             break;
         }
-        case 2: //Hiển thị cây thư mục
+        case '2': //Hiển thị cây thư mục
         {
             system("cls");
             //Hiển thị thông tin các tập tin/thư mục trong cây thư mục 
@@ -55,7 +56,7 @@ void printNTFSMenu(LPCWSTR  drive, BYTE sector[512])
             break;
         }
         //Thoat khoi menu FAT32
-        case 3:
+        case '3':
             return;
 
         default:
@@ -105,7 +106,7 @@ void printFAT32Menu(LPCWSTR  drive, BYTE sector[512])
         case 1: //Hiển thị thông tin của một phân vùng người dùng đã chọn
         {
             //Hàm hiển thị thông tin phân vùng
-            displayBootSectorInfo(origin);
+            displayFAT32BootSectorInfo(origin);
             break;
         }
         case 2: //Hiển thị cây thư mục

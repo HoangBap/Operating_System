@@ -37,6 +37,26 @@ uin32 hexToInt(string value)
     return res;
 }
 
+//char hexToChar(string value)
+//{
+//
+//    char res = 0;
+//    for (int i = 0; i < value.length(); i++)
+//    {
+//        res *= 16;
+//        if (value[i] >= '0' && value[i] <= '9')
+//        {
+//            res += (value[i] - '0');
+//        }
+//        else if ((tolower(value[i])) >= 'a' && (tolower(value[i]) <= 'f'))
+//        {
+//            res += (tolower(value[i]) - 'a' + 10);
+//        }
+//    }
+//
+//    return res;
+//}
+
 char hexToChar(string value)
 {
 
@@ -44,13 +64,26 @@ char hexToChar(string value)
     for (int i = 0; i < value.length(); i++)
     {
         res *= 16;
-        if (value[i] >= '0' && value[i] <= '9')
+        switch (value[i])
         {
-            res += (value[i] - '0');
-        }
-        else if ((tolower(value[i])) >= 'a' && (tolower(value[i]) <= 'f'))
-        {
-            res += (tolower(value[i]) - 'a' + 10);
+        case '0':res += 0; break;
+        case '1':res += 1; break;
+        case '2':res += 2; break;
+        case '3':res += 3; break;
+        case '4':res += 4; break;
+        case '5':res += 5; break;
+        case '6':res += 6; break;
+        case '7':res += 7; break;
+        case '8':res += 8; break;
+        case '9':res += 9; break;
+        case 'a':res += 10; break;
+        case 'b':res += 11; break;
+        case 'c':res += 12; break;
+        case 'd':res += 13; break;
+        case 'e':res += 14; break;
+        case 'f':res += 15; break;
+        default:
+            res += 0;
         }
     }
 
@@ -220,7 +253,7 @@ void readSectorByByte(LPCWSTR  drive, uin32 readPoint, BYTE*& sector, uin32 tota
 
 bool isNTFS(BYTE sector[512])
 {
-    /*printToASCCIIandHEX(sector, 0, 512);*/
+    //printToASCCIIandHEX(sector, 0, 512);
     string NTFSType = "";
     int beginOffset = hexToInt("3");
 

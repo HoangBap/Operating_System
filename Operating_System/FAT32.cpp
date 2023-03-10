@@ -1,9 +1,4 @@
-﻿#include<iostream>
-#include<sstream>
-#include<iomanip>
-#include<algorithm>
-
-#include"UIControl.h"
+﻿#include"UIControl.h"
 #include"Function.h"
 #include"FAT32.h"
 
@@ -28,7 +23,7 @@ bool isFAT32(BYTE sector[512]) {
 	return false;
 }
 
-void displayBootSectorInfo(FAT32 origin)
+void displayFAT32BootSectorInfo(FAT32 origin)
 {
 	system("cls");
 	drawRect(1, 1, 62, 13, 1, 1);
@@ -172,7 +167,7 @@ void printDirectory(LPCWSTR  drive, DirectoryFile input, uin32 number, unsigned 
 			return;
 		}
 
-		vector<ull> clusterContain;
+		vector<uin32> clusterContain;
 
 		clusterContain.push_back(input.beginCluster);
 		unsigned int field = FAT[clusterContain.at(clusterContain.size() - 1)];
@@ -185,9 +180,9 @@ void printDirectory(LPCWSTR  drive, DirectoryFile input, uin32 number, unsigned 
 		}
 
 
-		ull CurrentSector = origin.sectorBootsector + origin.numFAT * origin.sizeFAT + input.childFiles[choice].beginCluster * origin.sectorPerCluster - origin.clusterBeginOfRDET * origin.sectorPerCluster;
-		ull readPoint = CurrentSector * origin.bytePerSector;
-		ull totalByteSector = clusterContain.size() * origin.sectorPerCluster * origin.bytePerSector;
+		uin32 CurrentSector = origin.sectorBootsector + origin.numFAT * origin.sizeFAT + input.childFiles[choice].beginCluster * origin.sectorPerCluster - origin.clusterBeginOfRDET * origin.sectorPerCluster;
+		uin32 readPoint = CurrentSector * origin.bytePerSector;
+		uin32 totalByteSector = clusterContain.size() * origin.sectorPerCluster * origin.bytePerSector;
 		BYTE* sector = NULL;
 
 		readSectorByByte(drive, readPoint, sector, totalByteSector);

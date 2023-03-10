@@ -1,8 +1,9 @@
 ﻿#pragma once
 #include<iostream>
 #include<string>
-
-#define uin32 uint32_t
+#include<sstream>
+#include<iomanip>
+#include<algorithm>
 
 #include"Function.h"
 using namespace std;
@@ -53,7 +54,7 @@ bool isFAT32(BYTE sector[512]);
 uin32 getSizeFAT32(DirectoryFile input);
 
 //Hiển thị thông tin của bootsector FAT32 (số sector của bootsector, số sector cho mỗi cluster, ...)
-void displayBootSectorInfo(FAT32 origin); 
+void displayFAT32BootSectorInfo(FAT32 origin); 
 
 //Hiển thị cây thư mục
 void printDirectory(LPCWSTR  drive, DirectoryFile inp, uin32 number, unsigned int* FAT, FAT32 origin, bool flag);

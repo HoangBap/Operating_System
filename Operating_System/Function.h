@@ -1,18 +1,17 @@
 ﻿#pragma once
-#define ull uint32_t
 #include <windows.h>
 #include <string>
 #include <iostream>
 #include <vector>
 #include <sstream>
 #include <iomanip>
-
-#include"FAT32.h"
+#define uin32 uint32_t
 using namespace std;
 
 string intToHex(uin32 value);
 uin32 hexToInt(string value);
 uin32 byteToInt(BYTE value);
+char hexToChar(string value);
 void printToASCCIIandHEX(BYTE sector[], uin32 begin, uin32 n);
 void trimWstring(wstring& input);
 

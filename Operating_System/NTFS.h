@@ -1,8 +1,14 @@
 #pragma once
-#pragma once
 #include<iostream>
 #include<string>
+
+#include"UIControl.h"
 #include"Function.h"
+
+#define HEIGHT 8
+#define WIDTH 50
+#define DISTANCE 10
+
 using namespace std;
 
 struct NTFS
@@ -123,8 +129,24 @@ struct NTFSDirectoryFile
 	bool allowPrintData;
 	DataAttribute* data;
 
-	// connection
-	vector<NTFSDirectoryFile> chillFile;
+	string type;
+	wstring name;
+	string extension;
+	uin32 beginCluster;
+	uin32 fileSize;
+	MFTEntry* currEntry;
+	vector<uin32> listSector;
+	uin32 numberEntry;
+
+	//next section
+	uin32 numberFile;
+	vector<NTFSDirectoryFile> childFiles;
+
+	//prev sector
+	vector<NTFSDirectoryFile> fatherFiles;
+
+	//// connection
+	//vector<NTFSDirectoryFile> childFiles;
 
 };
 
@@ -158,6 +180,12 @@ void displayNTFSFileTree(LPCWSTR  drive, NTFSDirectoryFile root, NTFS origin, in
 
 int ReadNTFSSectorByByte(LPCWSTR  drive, uin32 readPoint, BYTE*& sector, uin32 totalByteSector);
 
+uin32 getSizeNTFS(NTFSDirectoryFile input);
+
+void displayNTFSDirFileInfo(NTFSDirectoryFile input, int numberFolder);
+
 void printFileNTFSData(LPCWSTR  drive, uin32 clusterSize, uin32 clusterBegin, NTFS origin);
 
 void displayNTFSDirectoryFile(LPCWSTR  drive, NTFSDirectoryFile temp, NTFS origin, int level);
+
+void display();

@@ -2,9 +2,69 @@
 
 #include"UIcontrol.h"
 #include"Menu.h"
-#include"FAT32.h"
 #include"Function.h"
+#include"FAT32.h"
+#include"NTFS.h"
 using namespace std;
+
+void printNTFSMenu(LPCWSTR  drive, BYTE sector[512])
+{
+    NTFS origin;
+    NTFSDirectoryFile* root = new NTFSDirectoryFile();
+    MFT fileMFT;
+
+    readNTFSInfo(drive, sector, origin, fileMFT, *root);
+
+    string choice;
+    while (true) {
+        //Vẽ bảng cho nó đẹp
+        system("cls");
+        drawRect(1, 1, 62, 9, 1, 1);
+
+        setxy(2, 2);
+        cout << setw(20) << " " << "NTFS File System" << endl;
+
+        setxy(2, 4);
+        cout << "\033[00m" << setw(8) << " " << "1. Partition Boot Sector Information";
+
+        setxy(2, 5);
+        cout << "\033[00m" << setw(8) << " " << "2. Root Directory Information";
+
+        setxy(2, 6);
+        cout << "\033[00m" << setw(8) << " " << "3. Back to main menu";
+
+        setxy(2, 8);
+        cout << "\033[00m" << setw(8) << " " << "Enter your choice (1->3): ";
+        getline(cin, choice);
+
+        //Xét lựa chọn
+        switch (choice[0])
+        {
+        case '1': //Hiển thị thông tin của một phân vùng người dùng đã chọn
+        {
+            //Hàm hiển thị thông tin phân vùng
+            displayBPBInfo(origin);
+            system("pause");
+            break;
+        }
+        case '2': //Hiển thị cây thư mục
+        {
+            system("cls");
+            //Hiển thị thông tin các tập tin/thư mục trong cây thư mục 
+            printNTFSDirectory(drive, *root, origin, root->numberFile, 0);
+            system("pause");
+            break;
+        }
+        //Thoat khoi menu FAT32
+        case '3':
+            return;
+
+        default:
+            break;
+        }
+    }
+}
+
 
 void printFAT32Menu(LPCWSTR  drive, BYTE sector[512])
 {
@@ -46,14 +106,14 @@ void printFAT32Menu(LPCWSTR  drive, BYTE sector[512])
         case 1: //Hiển thị thông tin của một phân vùng người dùng đã chọn
         {
             //Hàm hiển thị thông tin phân vùng
-            displayBootSectorInfo(origin);
+            displayFAT32BootSectorInfo(origin);
             break;
         }
         case 2: //Hiển thị cây thư mục
         {
             system("cls");
             //Hiển thị thông tin các tập tin/thư mục trong cây thư mục 
-            printRDET(drive, *root, root->numberFile, FAT, origin);
+            printDirectory(drive, *root, root->numberFile, FAT, origin, 0);
             system("pause");
             break;
         }
@@ -92,14 +152,14 @@ void printMainMenu()
 
         if (isFAT32(sector))
             printFAT32Menu(path.c_str(), sector);
-        /*else
-        {
-        cout << "File system: NTFS" << end;;
-        printNTFSMenu(path.c_str(), sector);
-        }*/
+
+        else if (isNTFS(sector))
+            printNTFSMenu(path.c_str(), sector);
+
+        else
+            cout << "Sorry our program can only read FAT32 or NTFS :'(" << endl;
     }
     
     system("cls");
     cout << "Program is shutting down....." << endl;
-    system("pause");
 }

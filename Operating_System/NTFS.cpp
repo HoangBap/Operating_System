@@ -582,7 +582,20 @@ void displayNTFSDirFileInfo(NTFSDirectoryFile folder, NTFS origin, uin32 numberF
 		cout << folder.data->FirstCluster * origin.sectorPerCluster << ", ... , " << folder.data->FirstCluster * origin.sectorPerCluster + (folder.data->clusterCount * origin.sectorPerCluster - 1);
 }
 
-void printNTFSFileTextContent(NTFSDirectoryFile folder, NTFS origin, uin32 number)
+void printNTFSFileTextContent(BYTE sector[], uin32 begin, uin32 n) {
+	system("cls");
+	cout << "\033[96m" << setw(20) << " " << "FILE TEXT CONTENT" << endl << endl;
+	uin32 temp = begin;
+
+	for (uin32 i = 0; i < n; i++)
+	{
+		BYTE b = sector[i];
+		char character = isascii(b) ? b : '.';
+		cout << "\033[0m" << character;
+	}
+
+	cout << endl << endl << "\033[96m" << setw(20) << " " << "END OF FILE" << endl;
+}
 
 void printNTFSDirectory(LPCWSTR  drive, NTFSDirectoryFile root, NTFS origin, uin32 numberFile, bool flag)
 {
@@ -595,7 +608,6 @@ void printNTFSDirectory(LPCWSTR  drive, NTFSDirectoryFile root, NTFS origin, uin
 
 	uin32 fileSize;
 	NTFSDirectoryFile folder;
-
 	for (uin32 i = 0; i < root.childFiles.size(); i++)
 	{
 		fileSize = 0;
@@ -634,19 +646,18 @@ void printNTFSDirectory(LPCWSTR  drive, NTFSDirectoryFile root, NTFS origin, uin
 
 		else
 		{
-			cout << padding << "\033[95m" << "------------------------" << endl;
-			cout << padding << "\033[95m" << "Use another program to read this file" << endl;
-			cout << padding << "--------- EOF ------------" << "\033[0m" << endl;
+			system("cls");
+			cout << "\033[96m" << endl << "Please use an approriate program to read this file" << endl;
+			return;
 		}
 	}
-
 	else
 	{
-		cout << padding << "\033[95m" << "------------------------" << endl;
-		cout << padding << "\033[95m" << "     FILE CONTENT" << endl;
-		cout << padding << "\033[95m" << "------------------------" << endl;
-		cout << padding << "\033[95m" << temp.data->data << endl;
-		cout << padding << "--------- EOF ------------" << "\033[0m" << endl;
+		system("cls");
+		cout << "\033[96m" << setw(20) << " " << "FILE TEXT CONTENT" << endl << endl;
+		cout << "\033[95m" << root.childFiles[choice].data->data << endl;
+		cout << endl << endl << "\033[96m" << setw(20) << " " << "END OF FILE" << endl;
 	}
+
 	cout << endl;
 }

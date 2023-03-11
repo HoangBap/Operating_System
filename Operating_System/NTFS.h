@@ -184,6 +184,6 @@ uin32 getSizeNTFS(NTFSDirectoryFile input);
 
 void displayNTFSDirFileInfo(NTFSDirectoryFile input, NTFS origin, uin32 numberFolder);
 
-void printNTFSFileTextContent(sector, 0, totalSector* origin.bytePerSector);
+void printNTFSFileTextContent(BYTE sector[], uin32 begin, uin32 n);
 
 void printFileNTFSData(LPCWSTR  drive, uin32 clusterSize, uin32 clusterBegin, NTFS origin);

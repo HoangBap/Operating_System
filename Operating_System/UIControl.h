@@ -1,6 +1,10 @@
 ﻿#pragma once
 #include <iostream>
 #include <windows.h>
+
+#define HEIGHT 8
+#define WIDTH 50
+#define DISTANCE 10
 using namespace std;
 
 //Xác định toạ độ x, y trên console 

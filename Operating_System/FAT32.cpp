@@ -2,9 +2,6 @@
 #include"Function.h"
 #include"FAT32.h"
 
-#define HEIGHT 8
-#define WIDTH 50
-#define DISTANCE 10
 using namespace std;
 
 bool isFAT32(BYTE sector[512]) {
@@ -75,7 +72,7 @@ void printFileTextContent(BYTE sector[], uin32 begin, uin32 n)
 	cout << endl << endl << "\033[96m" << setw(20) << " " << "END OF FILE" << endl;
 }
 
-void displayDirFile(DirectoryFile input, int numberFolder)
+void displayDirFile(DirectoryFile input, uin32 numberFolder)
 {
 	drawRect(1, 1 + numberFolder*DISTANCE, WIDTH, HEIGHT, numberFolder*DISTANCE, numberFolder*DISTANCE);
 
@@ -126,6 +123,7 @@ void printDirectory(LPCWSTR  drive, DirectoryFile input, uin32 number, unsigned 
 	{
 		fileSize = 0;
 		folder = input.childFiles[i];
+
 		//Folder size
 		if (folder.numberFile != 0) {
 			for (int j = 0; j < folder.numberFile - 2; j++) {

@@ -51,7 +51,7 @@ void printNTFSMenu(LPCWSTR  drive, BYTE sector[512])
         {
             system("cls");
             //Hiển thị thông tin các tập tin/thư mục trong cây thư mục 
-            displayNTFSFileTree(drive, *root, origin, 0);
+            printNTFSDirectory(drive, *root, origin, root->numberFile, 0);
             system("pause");
             break;
         }

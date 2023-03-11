@@ -62,8 +62,8 @@ struct StandardInfomationAttribute
 	string classID;
 	string ownerID;
 	string securityID;
-
 };
+
 struct FilenameAtrtibute
 {
 	uin32 FatherMFTEntry;
@@ -73,6 +73,7 @@ struct FilenameAtrtibute
 	string filename;
 	bool allowPrintData;
 };
+
 struct DataAttribute
 {
 	bool haveContentInEntry;
@@ -80,9 +81,8 @@ struct DataAttribute
 	uin32 clusterCount;
 	uin32 FirstCluster;
 	string data;
-
-
 };
+
 struct MFTEntryAttribute
 {
 	MFTEntryAttributeHeader header;
@@ -176,16 +176,14 @@ void readNTFSInfo(LPCWSTR  drive, BYTE sector[512], NTFS& origin, MFT& fileMFT, 
 
 void displayBPBInfo(NTFS origin);
 
-void displayNTFSFileTree(LPCWSTR  drive, NTFSDirectoryFile root, NTFS origin, int level);
+void printNTFSDirectory(LPCWSTR  drive, NTFSDirectoryFile root, NTFS origin, uin32 numberFile, bool flag);
 
-int ReadNTFSSectorByByte(LPCWSTR  drive, uin32 readPoint, BYTE*& sector, uin32 totalByteSector);
+int readNTFSSectorByByte(LPCWSTR  drive, uin32 readPoint, BYTE*& sector, uin32 totalByteSector);
 
 uin32 getSizeNTFS(NTFSDirectoryFile input);
 
-void displayNTFSDirFileInfo(NTFSDirectoryFile input, int numberFolder);
+void displayNTFSDirFileInfo(NTFSDirectoryFile input, NTFS origin, uin32 numberFolder);
+
+void printNTFSFileTextContent(sector, 0, totalSector* origin.bytePerSector);
 
 void printFileNTFSData(LPCWSTR  drive, uin32 clusterSize, uin32 clusterBegin, NTFS origin);
-
-void displayNTFSDirectoryFile(LPCWSTR  drive, NTFSDirectoryFile temp, NTFS origin, int level);
-
-void display();

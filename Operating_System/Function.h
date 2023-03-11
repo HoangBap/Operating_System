@@ -5,6 +5,7 @@
 #include <vector>
 #include <sstream>
 #include <iomanip>
+#include<algorithm>
 #define uin32 uint32_t
 using namespace std;
 

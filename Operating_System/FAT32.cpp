@@ -98,7 +98,8 @@ void displayDirFile(DirectoryFile input, uin32 numberFolder)
 uin32 getSizeFAT32(DirectoryFile input) {
 	uin32 total = 0;
 	if (input.type.find("Folder") == string::npos)
-		return input.fileSize;
+		//return input.fileSize;
+		return 0;
 
 	for (int i = 0; i < input.numberFile - 2; i++) {
 		total += getSizeFAT32(input.childFiles[i]);

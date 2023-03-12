@@ -154,7 +154,7 @@ bool isNTFS(BYTE sector[512]);
 
 void readMFTEntryHeader(BYTE*& sector, MFTEntryHeader& header);
 
-int readNTFSSectorByByte(LPCWSTR  drive, uin32 readPoint, BYTE*& sector, uin32 totalByteSector);
+//int readNTFSSectorByByte(LPCWSTR  drive, uin32 readPoint, BYTE*& sector, uin32 totalByteSector);
 
 void readMFTEntryAttribute(BYTE* sector, MFTEntryAttribute& attribute);
 
@@ -178,9 +178,7 @@ void displayBPBInfo(NTFS origin);
 
 void printNTFSDirectory(LPCWSTR  drive, NTFSDirectoryFile root, NTFS origin, uin32 numberFile, bool flag);
 
-int readNTFSSectorByByte(LPCWSTR  drive, uin32 readPoint, BYTE*& sector, uin32 totalByteSector);
-
-uin32 getSizeNTFS(NTFSDirectoryFile input);
+void readNTFSSectorByByte(LPCWSTR  drive, uin32 readPoint, BYTE*& sector, uin32 totalByteSector);
 
 void displayNTFSDirFileInfo(NTFSDirectoryFile input, NTFS origin, uin32 numberFolder);
 

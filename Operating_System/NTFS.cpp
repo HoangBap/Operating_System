@@ -1,6 +1,5 @@
 #include"NTFS.h"
 #include"UIControl.h"
-#define 
 
 void readMFTEntryHeader(BYTE*& sector, MFTEntryHeader& header)
 {
@@ -29,39 +28,39 @@ void readMFTEntryHeader(BYTE*& sector, MFTEntryHeader& header)
 	//DisplayMFTEntryHeader(header);
 }
 
-int readNTFSSectorByByte(LPCWSTR  drive, uin32 readPoint, BYTE*& sector, uin32 totalByteSector)
-{
-
-	sector = new BYTE[totalByteSector];
-	LARGE_INTEGER scale;
-	scale.QuadPart = readPoint;
-	//cout << endl << scale.LowPart << "-" << scale.HighPart << endl;
-	DWORD bytesRead;
-	HANDLE device = NULL;
-
-	device = CreateFile(drive,    // Drive to open
-		GENERIC_READ,           // Access mode
-		FILE_SHARE_READ | FILE_SHARE_WRITE,        // Share Mode
-		NULL,                   // Security Descriptor
-		OPEN_EXISTING,          // How to create
-		0,                      // File attributes
-		NULL);                  // Handle to template
-
-	if (device == INVALID_HANDLE_VALUE) // Open Error
-	{
-		printf("CreateFile: %u\n", GetLastError());
-		return 1;
-	}
-	SetFilePointer(device, scale.LowPart, &scale.HighPart, FILE_BEGIN);//Set a Point to Read
-
-
-	//SetFilePointer(device, numberSector*sectorSize, NULL, FILE_CURRENT);//Set a Point to Read
-	if (!ReadFile(device, sector, totalByteSector, &bytesRead, NULL))
-	{
-		printf("ReadFile: %u\n", GetLastError());
-	}
-
-}
+//int readNTFSSectorByByte(LPCWSTR  drive, uin32 readPoint, BYTE*& sector, uin32 totalByteSector)
+//{
+//
+//	sector = new BYTE[totalByteSector];
+//	LARGE_INTEGER scale;
+//	scale.QuadPart = readPoint;
+//	//cout << endl << scale.LowPart << "-" << scale.HighPart << endl;
+//	DWORD bytesRead;
+//	HANDLE device = NULL;
+//
+//	device = CreateFile(drive,    // Drive to open
+//		GENERIC_READ,           // Access mode
+//		FILE_SHARE_READ | FILE_SHARE_WRITE,        // Share Mode
+//		NULL,                   // Security Descriptor
+//		OPEN_EXISTING,          // How to create
+//		0,                      // File attributes
+//		NULL);                  // Handle to template
+//
+//	if (device == INVALID_HANDLE_VALUE) // Open Error
+//	{
+//		printf("CreateFile: %u\n", GetLastError());
+//		return 1;
+//	}
+//	SetFilePointer(device, scale.LowPart, &scale.HighPart, FILE_BEGIN);//Set a Point to Read
+//
+//
+//	//SetFilePointer(device, numberSector*sectorSize, NULL, FILE_CURRENT);//Set a Point to Read
+//	if (!ReadFile(device, sector, totalByteSector, &bytesRead, NULL))
+//	{
+//		printf("ReadFile: %u\n", GetLastError());
+//	}
+//
+//}
 
 string entryAttributeType(uin32 value)
 {
@@ -148,7 +147,7 @@ string attributeType(uin32 value)
 			case 12: res += "Offline "; break;
 			case 13: res += "Not Content "; break;
 			case 14: res += "Encrypted "; break;
-			case 28: res += "Directory "; break;
+			case 28: res += "Folder "; break;
 			case 29: res += "Index View "; break;
 
 			}
@@ -347,21 +346,6 @@ bool AddNTFSFileToTree(NTFSDirectoryFile& root, NTFSDirectoryFile& inp)
 void readNTFSInfo(LPCWSTR  drive, BYTE sector[512], NTFS& origin,
 	MFT& fileMFT, NTFSDirectoryFile& root)
 {
-
-	origin.bytePerSectorString = "";
-	origin.sectorPerClusterString = "";
-	origin.DiskType = "";
-	origin.sectorPerTrackString = "";
-	origin.numberHeadString = "";
-	origin.DiskSectorBeginString = "";
-	origin.sectorDiskLogicString = "";
-	origin.MFTClusterBeginString = "";
-	origin.MFTBackupClusterBeginSring = "";
-	origin.MFTEntrySizeString = "";
-	origin.clusterOfIndexBufferString = "";
-	origin.VolumnSerialNumber = "";
-
-
 	origin.bytePerSector = readPlace(sector, "b", 2);
 	origin.sectorPerCluster = readPlace(sector, "d", 1);
 	readPlaceForString(sector, "15", 1, origin.DiskType);
@@ -386,8 +370,6 @@ void readNTFSInfo(LPCWSTR  drive, BYTE sector[512], NTFS& origin,
 
 	while (true)
 	{
-
-
 		MFTEntry entryAdd = readMFTEntry(drive, origin, count, flag);
 		if (flag == false) break;
 		fileMFT.arrayMFTEntry.push_back(entryAdd);
@@ -446,9 +428,6 @@ void readNTFSInfo(LPCWSTR  drive, BYTE sector[512], NTFS& origin,
 		{
 			root.childFiles.push_back(file);
 		}
-
-
-
 	}
 }
 
@@ -491,7 +470,7 @@ void displayBPBInfo(NTFS origin)
 	system("pause");
 }
 
-int readNTFSSectorByByte(LPCWSTR  drive, uin32 readPoint, BYTE*& sector, uin32 totalByteSector)
+void readNTFSSectorByByte(LPCWSTR  drive, uin32 readPoint, BYTE*& sector, uin32 totalByteSector)
 {
 
 	sector = new BYTE[totalByteSector];
@@ -512,7 +491,7 @@ int readNTFSSectorByByte(LPCWSTR  drive, uin32 readPoint, BYTE*& sector, uin32 t
 	if (device == INVALID_HANDLE_VALUE) // Open Error
 	{
 		printf("CreateFile: %u\n", GetLastError());
-		return 1;
+		return;
 	}
 	SetFilePointer(device, scale.LowPart, &scale.HighPart, FILE_BEGIN);//Set a Point to Read
 
@@ -535,24 +514,12 @@ void printFileNTFSData(LPCWSTR  drive, uin32 clusterSize, uin32 clusterBegin, NT
 	printNTFSFileTextContent(sector, 0, totalSector * origin.bytePerSector);
 }
 
-uin32 getSizeNTFS(NTFSDirectoryFile input)
-{
-	uin32 total = 0;
-	if (input.type.find("Folder") == string::npos)
-		return input.fileSize;
-
-	for (int i = 0; i < input.numberFile - 2; i++) {
-		total += getSizeNTFS(input.childFiles[i]);
-	}
-	return total;
-}
-
 void displayNTFSDirFileInfo(NTFSDirectoryFile folder, NTFS origin, uin32 numberFile)
 {
-	drawRect(1, 1 + numberFile * DISTANCE, WIDTH, HEIGHT + 2, numberFile * DISTANCE, numberFile * DISTANCE);
+	drawRect(1, 1 + numberFile * DISTANCE, WIDTH, HEIGHT + 1, numberFile * DISTANCE, numberFile * DISTANCE);
 
 	setxy(3, 2 + numberFile * DISTANCE);
-	cout << numberFile<< ": " << "\033[96m" << folder.fileName;
+	cout << numberFile + 1 << ": " << "\033[96m" << folder.fileName;
 
 	setxy(10, 4 + numberFile * DISTANCE);
 	cout << "\033[0m" << "- File type: " << folder.fileType;
@@ -560,41 +527,59 @@ void displayNTFSDirFileInfo(NTFSDirectoryFile folder, NTFS origin, uin32 numberF
 	setxy(10, 5 + numberFile * DISTANCE);
 	cout << "\033[0m" << "- File name type: " << folder.nameType;
 
-	setxy(10, 6 + numberFile * DISTANCE);
-	cout << "\033[0m" << "- File size: " << folder.fileSize << " bytes";
-
-	setxy(10, 7 + numberFile* DISTANCE);
-	cout << "\033[0m" << "- List sector: ";
-
-	if (folder.listSector.size() > 0)
-		cout << "\033[0m" << folder.listSector.at(0) << ", ... ," << folder.listSector.at(input.listSector.size() - 1);
-
+	uin32 size;// = folder.data->contentSize * origin.bytePerSector;
 
 	if (folder.data == NULL)
+	{
+		setxy(10, 6 + numberFile * DISTANCE);
+		cout << "\033[0m" << "- File size: " << 0 << " byte";
+
+		setxy(10, 7 + numberFile * DISTANCE);
+		cout << "\033[0m" << "- List sector: None";
+
 		return;
-	
-	setxy(10, 8 + numberFile * DISTANCE);
-	cout << "\033[0m" << "- File sector : ";
-	if (folder.data->haveContentInEntry)
-		cout << folder.data->FirstCluster << ", ... , " << folder.data->FirstCluster + folder.data->contentSize - 1;
+	}
+
+	else if (folder.data->haveContentInEntry)
+	{
+	//	cout << folder.data->FirstCluster << ", ... , " << folder.data->FirstCluster + folder.data->contentSize - 1;
+		size = folder.data->contentSize * origin.bytePerSector;
+
+		setxy(10, 6 + numberFile * DISTANCE);
+		cout << "\033[0m" << "- File size: " << size << " bytes";
+
+		setxy(10, 7 + numberFile * DISTANCE);
+		cout << "\033[0m" << "- List sector: " << folder.data->FirstCluster << ", ... , " << folder.data->FirstCluster + folder.data->contentSize - 1;
+	}
 
 	else
-		cout << folder.data->FirstCluster * origin.sectorPerCluster << ", ... , " << folder.data->FirstCluster * origin.sectorPerCluster + (folder.data->clusterCount * origin.sectorPerCluster - 1);
+	{
+	//	cout << folder.data->FirstCluster * origin.sectorPerCluster << ", ... , " << folder.data->FirstCluster * origin.sectorPerCluster + (folder.data->clusterCount * origin.sectorPerCluster - 1);
+		size = folder.data->clusterCount * origin.sectorPerCluster * origin.bytePerSector;
+		
+		setxy(10, 6 + numberFile * DISTANCE);
+		cout << "\033[0m" << "- File size: " << size << " bytes";
+
+		setxy(10, 7 + numberFile * DISTANCE);
+		cout << "\033[0m" << "- List sector: " << folder.data->FirstCluster * origin.sectorPerCluster << ", ... , " << folder.data->FirstCluster * origin.sectorPerCluster + (folder.data->clusterCount * origin.sectorPerCluster - 1);
+
+	}
+	
 }
 
 void printNTFSFileTextContent(BYTE sector[], uin32 begin, uin32 n) {
 	system("cls");
-	cout << "\033[96m" << setw(20) << " " << "FILE TEXT CONTENT" << endl << endl;
+	cout << "\033[00m" << setw(20) << " " << "FILE TEXT CONTENT" << endl << endl;
 	uin32 temp = begin;
-
+	cout << "\033[00m";
 	for (uin32 i = 0; i < n; i++)
 	{
 		BYTE b = sector[i];
 		char character = isascii(b) ? b : '.';
-		cout << "\033[0m" << character;
+		cout << "\033[00m" << character;
 	}
 
-	cout << endl << endl << "\033[96m" << setw(20) << " " << "END OF FILE" << endl;
+	cout << endl << endl << "\033[00m" << setw(20) << " " << "END OF FILE" << endl;
 }
 
 void printNTFSDirectory(LPCWSTR  drive, NTFSDirectoryFile root, NTFS origin, uin32 numberFile, bool flag)
@@ -608,20 +593,12 @@ void printNTFSDirectory(LPCWSTR  drive, NTFSDirectoryFile root, NTFS origin, uin
 
 	uin32 fileSize;
 	NTFSDirectoryFile folder;
-	for (uin32 i = 0; i < root.childFiles.size(); i++)
+	for (uin32 i = root.childFiles.size() - 1; i >=0; i--)
 	{
 		fileSize = 0;
 		folder = root.childFiles[i];
 
-		//Folder size
-		if (folder.numberFile != 0) {
-			for (int j = 0; j < folder.numberFile - 2; j++) 
-				fileSize += getSizeNTFS(folder.childFiles[j]);
-		
-			folder.fileSize = fileSize;
-		}
-
-		displayNTFSDirFileInfo(folder, origin, numberFile - i - 1);
+		displayNTFSDirFileInfo(folder, origin, root.childFiles.size() - i - 1);
 		if (i == 0)
 			break;
 	}
@@ -631,13 +608,13 @@ void printNTFSDirectory(LPCWSTR  drive, NTFSDirectoryFile root, NTFS origin, uin
 	cout << "- Enter the number corresponding to the file to see more information" << endl <<
 		"- Enter the unrelated key to QUIT: " << endl << "  Choice: ";
 	cin >> choice;
-
-	if (choice > root.numberFile)
+	choice -= 1;
+	if (choice > root.childFiles.size())
 		return;
 
-	choice = numberFile - 1 - choice;
+	choice = root.childFiles.size() - 1 - choice;
 	if (root.childFiles[choice].fileType.find("Folder") != string::npos)
-		printNTFSDirectory(drive, root.childFiles[choice], origin, root.childFiles[choice].numberFile, true);
+		printNTFSDirectory(drive, root.childFiles[choice], origin, root.childFiles[choice].childFiles.size(), true);
 
 	if (!root.childFiles[choice].data->haveContentInEntry)
 	{
@@ -655,7 +632,7 @@ void printNTFSDirectory(LPCWSTR  drive, NTFSDirectoryFile root, NTFS origin, uin
 	{
 		system("cls");
 		cout << "\033[96m" << setw(20) << " " << "FILE TEXT CONTENT" << endl << endl;
-		cout << "\033[95m" << root.childFiles[choice].data->data << endl;
+		cout << "\033[00m" << root.childFiles[choice].data->data << endl;
 		cout << endl << endl << "\033[96m" << setw(20) << " " << "END OF FILE" << endl;
 	}
 

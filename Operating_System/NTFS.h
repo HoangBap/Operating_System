@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include<iostream>
 #include<string>
 
@@ -13,17 +13,7 @@ using namespace std;
 
 struct NTFS
 {
-	string bytePerSectorString = "";
-	string sectorPerClusterString = "";
 	string DiskType = "";
-	string sectorPerTrackString = "";
-	string numberHeadString = "";
-	string DiskSectorBeginString = "";
-	string sectorDiskLogicString = "";
-	string MFTClusterBeginString = "";
-	string MFTBackupClusterBeginSring = "";
-	string MFTEntrySizeString = "";
-	string clusterOfIndexBufferString = "";
 	string VolumnSerialNumber = "";
 
 	uin32 bytePerSector;
@@ -37,6 +27,7 @@ struct NTFS
 	uin32 MFTEntrySize;
 	uin32 clusterOfIndexBuffer;
 };
+
 struct MFTEntryAttributeHeader
 {
 	string attributeType;
@@ -48,10 +39,8 @@ struct MFTEntryAttributeHeader
 	uin32 AttributeID;
 	uin32 AttributeLength;
 	string AttributeOffset;
-
-
-
 };
+
 struct StandardInfomationAttribute
 {
 	string createTime = "";
@@ -69,6 +58,7 @@ struct FilenameAtrtibute
 	uin32 FatherMFTEntry;
 	string flags;
 	uin32 nameLength;
+	uin32 fileSize;
 	string nameType;
 	string filename;
 	bool allowPrintData;
@@ -90,8 +80,8 @@ struct MFTEntryAttribute
 	StandardInfomationAttribute* StandardInfo;
 	FilenameAtrtibute* Filename;
 	DataAttribute* data;
-	//donotthing
 };
+
 struct MFTEntryHeader
 {
 	string entrySign = "";
@@ -108,80 +98,68 @@ struct MFTEntryHeader
 	string nextAttribute;
 	uin32 idOfThisRecord;
 };
+
 struct MFTEntry
 {
 	MFTEntryHeader header;
 	uin32 sizeAttribute;
 	vector<MFTEntryAttribute> attribute;
 };
+
 struct MFT
 {
 	uin32 numberMFTEntry;
 	vector<MFTEntry> arrayMFTEntry;
 };
+
 struct NTFSDirectoryFile
 {
 	uin32 idFile;
 	uin32 parrentId;
+	uin32 fileSize = 0;
 	string fileName;
 	string fileType;
 	string nameType;
 	bool allowPrintData;
 	DataAttribute* data;
 
-	string type;
-	wstring name;
-	string extension;
-	uin32 beginCluster;
-	uin32 fileSize;
-	MFTEntry* currEntry;
-	vector<uin32> listSector;
-	uin32 numberEntry;
-
-	//next section
-	uin32 numberFile;
+	// connection
 	vector<NTFSDirectoryFile> childFiles;
-
-	//prev sector
-	vector<NTFSDirectoryFile> fatherFiles;
-
-	//// connection
-	//vector<NTFSDirectoryFile> childFiles;
-
 };
 
 bool isNTFS(BYTE sector[512]);
 
+//_____________________Hàm xử lý MFT
 void readMFTEntryHeader(BYTE*& sector, MFTEntryHeader& header);
-
-//int readNTFSSectorByByte(LPCWSTR  drive, uin32 readPoint, BYTE*& sector, uin32 totalByteSector);
-
 void readMFTEntryAttribute(BYTE* sector, MFTEntryAttribute& attribute);
-
-string entryAttributeType(uin32 value);
-
+//Gán thuộc tích cho tập tin/thư mục
 void readMFTStandardInfo(BYTE* sector, StandardInfomationAttribute& standard);
-
-string attributeType(uin32 value);
-
+//Đọc tên file của MFT
 void readMFTFileName(BYTE* sector, FilenameAtrtibute& standard);
-
+//Đọc dữ liệu của MFT
 void readMFTData(BYTE* sector, DataAttribute& standard, uin32 size, uin32 VCN, uin32 fullSize, string beginAttributeOffset);
-
+//Đọc Entry của MFT
 MFTEntry readMFTEntry(LPCWSTR  drive, NTFS origin, uin32 beginEntryId, bool& flag);
+string entryAttributeType(uin32 value);
+//Convert giá trị thập phân thành nhị phân và sau đó trả về thuộc tính của tập tin/thư mục
+string attributeType(uin32 value);
+//______________________________________________________________
 
 bool AddNTFSFileToTree(NTFSDirectoryFile& root, NTFSDirectoryFile& inp);
 
-void readNTFSInfo(LPCWSTR  drive, BYTE sector[512], NTFS& origin, MFT& fileMFT, NTFSDirectoryFile& root);
+void readFileNTFSData(LPCWSTR  drive, uin32 clusterSize, uin32 clusterBegin, NTFS origin);
+uin32 getNTFSSize(NTFSDirectoryFile input, NTFS origin);
 
-void displayBPBInfo(NTFS origin);
-
+//In nội dung file text
+void printNTFSFileTextContent(BYTE sector[], uin32 begin, uin32 n);
+//Đọc nội dung dữ liệu của file
+void readFileNTFSData(LPCWSTR  drive, uin32 clusterSize, uin32 clusterBegin, NTFS origin);
+//Hiển thị các thông tin cơ bản của tập tin/thư mục
+void displayNTFSDirFileInfo(NTFSDirectoryFile input, NTFS origin, uin32 numberFolder);
+//In cây thư mục
 void printNTFSDirectory(LPCWSTR  drive, NTFSDirectoryFile root, NTFS origin, uin32 numberFile, bool flag);
 
-void readNTFSSectorByByte(LPCWSTR  drive, uin32 readPoint, BYTE*& sector, uin32 totalByteSector);
-
-void displayNTFSDirFileInfo(NTFSDirectoryFile input, NTFS origin, uin32 numberFolder);
-
-void printNTFSFileTextContent(BYTE sector[], uin32 begin, uin32 n);
-
-void printFileNTFSData(LPCWSTR  drive, uin32 clusterSize, uin32 clusterBegin, NTFS origin);
+//Hiển thị thông tin cơ bản của phân vùng
+void displayBPBInfo(NTFS origin);
+//Đọc các thông tin cơ bản của phân vùng 
+void readNTFSInfo(LPCWSTR  drive, BYTE sector[512], NTFS& origin, MFT& fileMFT, NTFSDirectoryFile& root);

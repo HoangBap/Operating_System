@@ -44,7 +44,6 @@ void printNTFSMenu(LPCWSTR  drive, BYTE sector[512])
         {
             //Hàm hiển thị thông tin phân vùng
             displayBPBInfo(origin);
-            system("pause");
             break;
         }
         case '2': //Hiển thị cây thư mục
@@ -55,7 +54,7 @@ void printNTFSMenu(LPCWSTR  drive, BYTE sector[512])
             system("pause");
             break;
         }
-        //Thoat khoi menu FAT32
+        //Thoat khoi menu NTFS
         case '3':
             return;
 
@@ -157,7 +156,7 @@ void printMainMenu()
             printNTFSMenu(path.c_str(), sector);
 
         else
-            cout << "Sorry our program can only read FAT32 or NTFS :'(" << endl;
+            cout << "Sorry our program can only read FAT32 or NTFS :(" << endl;
     }
     
     system("cls");

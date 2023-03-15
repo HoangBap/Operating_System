@@ -25,5 +25,3 @@ void readSector(LPCWSTR, int, BYTE sector[512]);
 //Hàm đọc sector với dung lượng lớn hơn, số byte đọc lớn hơn
 void readSectorByByte(LPCWSTR, uin32, BYTE*&, uin32);
 
-//Kiểm tra file system là loại nào (FAT32 hay NTFS)
-bool isNTFS(BYTE sector[512]);

@@ -78,6 +78,10 @@ void displayDirFile(DirectoryFile input, uin32 numberFolder)
 
 	setxy(3, 2 + numberFolder*DISTANCE);
 	wcout << numberFolder << ": " << "\033[96m" << input.name;
+	if (input.type.find("Folder") == string::npos && input.name.find(L".") == string::npos) {
+		transform(input.extension.begin(), input.extension.end(), input.extension.begin(), ::tolower);
+		cout << "\033[96m" << "." << input.extension;
+	}
 
 	setxy(10, 4 + numberFolder*DISTANCE);
 	cout << "\033[0m" << "- Type: " << input.type;
@@ -90,18 +94,16 @@ void displayDirFile(DirectoryFile input, uin32 numberFolder)
 
 	setxy(10, 7 + numberFolder*DISTANCE);
 	cout << "\033[0m" << "- List sector: ";
-
 	if (input.listSector.size() > 0)
-		cout << "\033[0m" << input.listSector.at(0) << ", ... ," << input.listSector.at(input.listSector.size() - 1);
+		cout << "\033[0m" << input.listSector.at(0) << ", ... ," << input.listSector.at(input.listSector.size() - 1) << endl;
 }
 
 uin32 getSizeFAT32(DirectoryFile input) {
 	uin32 total = 0;
 	if (input.type.find("Folder") == string::npos)
-		//return input.fileSize;
-		return 0;
+		return input.fileSize;
 
-	for (int i = 0; i < input.numberFile - 2; i++) {
+	for (uin32 i = 0; i < input.numberFile - 2; i++) {
 		total += getSizeFAT32(input.childFiles[i]);
 	}
 	return total;
@@ -132,17 +134,18 @@ void printDirectory(LPCWSTR  drive, DirectoryFile input, uin32 number, unsigned 
 			}
 			folder.fileSize = fileSize;
 		}
-
+		
 		displayDirFile(folder, number - i - 1);
 		if (i == 0) 
 			break;
 	}
 
 	//Cho người dùng muốn truy xuất thông tin của tập tin/thư mục trong cây thư mục
-	cout << "\n\n\n\n";
+	setxy(0, number * DISTANCE);
 	uin32 choice;
-	cout << "- Enter the number corresponding to the file to see more information" << endl <<
-		"- Enter the unrelated key to QUIT: " << endl << "  Choice: ";
+	cout << "- Enter the number corresponding to the file to see more information" << endl;
+	cout << "- Enter the unrelated key to QUIT: " << endl;
+	cout << "  Choice: ";
 	cin >> choice;
 	if (choice > input.numberFile)
 		return;
@@ -428,12 +431,15 @@ void RDETOverView(LPCWSTR  drive, BYTE*& sector, FAT32& origin, DirectoryFile& D
 	entrySplitView(sector, totalByteSector, Dir);
 }
 
-void SDETView(LPCWSTR  drive, const FAT32& input, DirectoryFile& Dir, unsigned int*& fat)
+void SDETView(LPCWSTR  drive, const FAT32& input, DirectoryFile& Dir, unsigned int*& FAT)
 {
 	uin32 count = Dir.numberFile - 1;
 	while (true)
 	{
-		if (count > Dir.numberFile) break;
+		//Because count does not have negative number so when it will get back to
+		if (count > Dir.numberFile) 
+			break;
+
 		DirectoryFile& c = Dir.childFiles[count];
 		c.fatherFiles = &Dir;
 
@@ -448,14 +454,15 @@ void SDETView(LPCWSTR  drive, const FAT32& input, DirectoryFile& Dir, unsigned i
 
 		vector<uin32> clusterContain;
 		clusterContain.push_back(c.beginCluster);
-		unsigned int field = fat[clusterContain.at(clusterContain.size() - 1)];
+		unsigned int field = FAT[clusterContain.at(clusterContain.size() - 1)];
 
 		while (field != hexToInt("0fffffff"))
 		{
 			clusterContain.push_back(field);
 			if (clusterContain[clusterContain.size() - 1] > (input.numFAT * input.bytePerSector / 4))
 				break;
-			field = fat[clusterContain[clusterContain.size() - 1]];
+
+			field = FAT[clusterContain[clusterContain.size() - 1]];
 		}
 
 		uin32 CurrentSector = input.sectorBootsector + input.numFAT * input.sizeFAT + c.beginCluster * input.sectorPerCluster - input.clusterBeginOfRDET * input.sectorPerCluster;
@@ -475,7 +482,7 @@ void SDETView(LPCWSTR  drive, const FAT32& input, DirectoryFile& Dir, unsigned i
 		{
 			entrySplitView(sector, totalByteSector, c);
 			viewDirectory(c.childFiles, c.numberFile, c.currEntry, c.numberEntry);
-			SDETView(drive, input, c, fat);
+			SDETView(drive, input, c, FAT);
 		}
 		count--;
 	}

@@ -126,20 +126,6 @@ void printToASCCIIandHEX(BYTE sector[], uin32 begin, uin32 n)
         BYTE b = sector[i];
         cout << setw(2) << fixed << intToHex(byteToInt(b)) << " ";
     }
-
-    /*for (uin32 j = n - 16; j < n; j++)
-    {
-        BYTE c = sector[j];
-        if (char(c) != '\n') {
-            if (c == 0)
-                cout << ".";
-            else
-                cout << c;
-        }
-
-        else
-            cout << ".";
-    }*/
 }
 
 void trimWstring(wstring& input)
@@ -251,20 +237,3 @@ void readSectorByByte(LPCWSTR  drive, uin32 readPoint, BYTE*& sector, uin32 tota
 
 
 
-bool isNTFS(BYTE sector[512])
-{
-    //printToASCCIIandHEX(sector, 0, 512);
-    string NTFSType = "";
-    int beginOffset = hexToInt("3");
-
-    for (int i = 0; i < 8; i++)
-    {
-        BYTE b = sector[beginOffset + i];
-        NTFSType += isascii(b) ? b : '.';
-    }
-
-    if (NTFSType.find("NTFS") != string::npos)
-        return true;
-    
-    return false;
-}

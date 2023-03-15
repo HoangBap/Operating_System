@@ -34,14 +34,14 @@ struct DirectoryFile
 	string type;
 	wstring name;
 	string extension;
-	uin32 beginCluster;
-	uin32 fileSize;
+	uin32 beginCluster = 0;
+	uin32 fileSize = 0;
 	Entry* currEntry;
 	vector<uin32> listSector;
-	uin32 numberEntry;
+	uin32 numberEntry = 0;
 
 	//next section
-	uin32 numberFile;
+	uin32 numberFile = 0;
 	DirectoryFile* childFiles;
 
 	//prev sector
